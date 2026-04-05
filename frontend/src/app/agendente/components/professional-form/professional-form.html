@@ -1,0 +1,147 @@
+<div class="form-container">
+  @if (loading) {
+    <div class="loading-overlay">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <div class="form-header">
+    <h1>{{ isEdit ? 'Editar' : 'Novo' }} Profissional</h1>
+    <a routerLink="/professionals" class="btn-back">Voltar</a>
+  </div>
+
+  @if (loading) {
+    <div class="loading">Carregando...</div>
+  } @else {
+    <form (ngSubmit)="save()">
+      <div class="form-section">
+        <h2>Informações Básicas</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nome *</label>
+            <input type="text" [(ngModel)]="professional.name" name="name" required />
+          </div>
+          <div class="form-group">
+            <label>Especialidade</label>
+            <input type="text" [(ngModel)]="professional.specialty" name="specialty" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Início da Carreira</label>
+            <input
+              type="date"
+              [(ngModel)]="professional.career_start_date"
+              name="career_start_date"
+            />
+          </div>
+          <div class="form-group">
+            <label>Link Rede Social</label>
+            <input
+              type="url"
+              [(ngModel)]="professional.social_media_link"
+              name="social_media_link"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Horário de Trabalho</h2>
+        <div class="weekdays">
+          @for (day of weekDays; track day.key) {
+            <label class="weekday-checkbox" [class.selected]="isDaySelected(day.key)">
+              <input
+                type="checkbox"
+                [checked]="isDaySelected(day.key)"
+                (change)="toggleDay(day.key)"
+              />
+              {{ day.label }}
+            </label>
+          }
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Horário Início</label>
+            <input type="time" [(ngModel)]="professional.working_hours!.start" name="hours_start" />
+          </div>
+          <div class="form-group">
+            <label>Horário Fim</label>
+            <input type="time" [(ngModel)]="professional.working_hours!.end" name="hours_end" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h2>Serviços Oferecidos</h2>
+        <table class="services-table">
+          <thead>
+            <tr>
+              <th>Serviço</th>
+              <th>Duração (h)</th>
+              <th>Preço (R$)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (svc of professional.services; track $index; let i = $index) {
+              <tr>
+                <td>
+                  <select
+                    [(ngModel)]="svc.service_id"
+                    [name]="'service_' + i"
+                    (change)="onServiceSelect(i, svc.service_id)"
+                  >
+                    <option value="">Selecione...</option>
+                    @for (s of availableServices; track s.service_id) {
+                      <option [value]="s.service_id">{{ s.name }}</option>
+                    }
+                  </select>
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    [(ngModel)]="svc.duration_hours"
+                    [name]="'duration_' + i"
+                    step="0.5"
+                    min="0.5"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    [(ngModel)]="svc.price"
+                    [name]="'price_' + i"
+                    step="0.01"
+                    min="0"
+                  />
+                </td>
+                <td>
+                  <button type="button" class="btn-remove" (click)="removeService(i)">✕</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <button type="button" class="btn-add" (click)="addService()">+ Adicionar Serviço</button>
+      </div>
+
+      <div class="form-section">
+        <h2>Política de Agendamento</h2>
+        <div class="form-group">
+          <label>Tipo</label>
+          <select [(ngModel)]="professional.scheduling_policy!.type" name="policy_type">
+            <option value="FLEXIBLE_MINUTES">Minutos Flexíveis</option>
+            <option value="FIXED_SLOTS">Slots Fixos</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-save" [disabled]="saving">
+          {{ saving ? 'Salvando...' : 'Salvar' }}
+        </button>
+      </div>
+    </form>
+  }
+</div>

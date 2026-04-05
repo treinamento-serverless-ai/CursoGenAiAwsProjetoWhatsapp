@@ -1,0 +1,63 @@
+<div class="calendar-container">
+  @if (loading) {
+    <div class="loading-overlay">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <div class="calendar-header">
+    <h1>Calendario de Agendamentos</h1>
+    <div class="filters">
+      <select [(ngModel)]="selectedProfessional" (change)="loadAppointments()">
+        <option value="">Todos os profissionais</option>
+        @for (prof of professionals; track prof.professional_id) {
+          <option [value]="prof.professional_id">{{ prof.name }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="calendar-nav">
+    <button (click)="prevMonth()">◀</button>
+    <h2>{{ currentDate | date: 'MMMM yyyy' }}</h2>
+    <button (click)="nextMonth()">▶</button>
+  </div>
+
+  @if (loading) {
+    <div class="loading">Carregando...</div>
+  } @else {
+    <div class="calendar-grid">
+      <div class="weekday">Dom</div>
+      <div class="weekday">Seg</div>
+      <div class="weekday">Ter</div>
+      <div class="weekday">Qua</div>
+      <div class="weekday">Qui</div>
+      <div class="weekday">Sex</div>
+      <div class="weekday">Sáb</div>
+
+      @for (day of calendarDays; track day.getTime()) {
+        <div class="day" [class.today]="isToday(day)" [class.other-month]="!isCurrentMonth(day)">
+          <span class="day-number">{{ day.getDate() }}</span>
+          <div class="appointments">
+            @for (appt of getAppointmentsForDay(day); track appt.appointment_id) {
+              <div
+                class="appointment"
+                [style.background-color]="getStatusColor(appt.status)"
+                [title]="appt.client_name + ' - ' + appt.service_name"
+              >
+                {{ appt.appointment_date | date: 'HH:mm' }} {{ appt.client_name | slice: 0 : 10 }}
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <div class="legend">
+    <span><span class="dot confirmed"></span> Confirmado</span>
+    <span><span class="dot pending"></span> Pendente</span>
+    <span><span class="dot cancelled"></span> Cancelado</span>
+    <span><span class="dot completed"></span> Concluído</span>
+  </div>
+</div>

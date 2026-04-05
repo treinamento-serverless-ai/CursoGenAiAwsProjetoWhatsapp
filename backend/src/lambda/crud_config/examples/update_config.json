@@ -1,0 +1,17 @@
+{
+  "httpMethod": "PUT",
+  "path": "/api/config",
+  "headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer mock-token"
+  },
+  "body": "{\"business_hours_start\":\"09:00\",\"business_hours_end\":\"18:00\",\"business_hours_timezone\":\"America/Sao_Paulo\",\"max_booking_days\":\"60\",\"inactivity_threshold_seconds\":\"10\",\"audio_processing_grace_period\":\"20\",\"closed_message\":\"Estamos fechados no momento.\",\"banned_message\":\"Usuário banido.\",\"transcribe_enabled\":\"true\",\"transcribe_disabled_message\":\"Transcrição desabilitada.\",\"audio_min_size_kb\":\"15\",\"audio_max_size_kb\":\"300\",\"ai_error_message\":\"Erro na IA.\",\"save_messages_after_hours\":\"false\",\"reply_with_context\":\"true\",\"reply_context_use_last\":\"false\"}",
+  "requestContext": {
+    "authorizer": {
+      "claims": {
+        "sub": "user-123",
+        "email": "admin@example.com"
+      }
+    }
+  }
+}

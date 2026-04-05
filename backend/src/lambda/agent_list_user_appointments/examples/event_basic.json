@@ -1,0 +1,8 @@
+{
+  "actionGroup": "ListUserAppointments",
+  "function": "list_user_appointments",
+  "parameters": [],
+  "sessionAttributes": {
+    "userId": "5511999887766"
+  }
+}

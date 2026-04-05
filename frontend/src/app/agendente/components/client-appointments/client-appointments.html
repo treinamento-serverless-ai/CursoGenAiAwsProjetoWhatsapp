@@ -1,0 +1,84 @@
+<div class="client-appointments">
+  <div class="panel-header">
+    <h3>Agendamentos</h3>
+    <button class="btn-add" (click)="toggleForm()" [title]="showForm ? 'Cancelar' : 'Novo agendamento'">
+      <mat-icon>{{ showForm ? 'close' : 'add' }}</mat-icon>
+    </button>
+  </div>
+
+  @if (showForm) {
+    <div class="appointment-form">
+      <div class="form-field">
+        <label>Data</label>
+        <input type="date" [(ngModel)]="formDate" />
+      </div>
+      <div class="form-field">
+        <label>Horário</label>
+        <input type="time" [(ngModel)]="formTime" />
+      </div>
+      <div class="form-field">
+        <label>Profissional</label>
+        <select [(ngModel)]="formProfessional">
+          <option value="">Selecione...</option>
+          @for (prof of professionals; track prof.professional_id) {
+            <option [value]="prof.professional_id">{{ prof.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Serviço</label>
+        <select [(ngModel)]="formService">
+          <option value="">Selecione...</option>
+          @for (svc of services; track svc.service_id) {
+            <option [value]="svc.service_id">{{ svc.name }}</option>
+          }
+        </select>
+      </div>
+      <button class="btn-create" (click)="createAppointment()" [disabled]="saving || !formDate || !formTime || !formProfessional || !formService">
+        @if (saving) { Salvando... } @else { <mat-icon>check</mat-icon> Agendar }
+      </button>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="loading">Carregando...</div>
+  } @else {
+    @if (futureAppointments.length > 0) {
+      <div class="section-label">Próximos</div>
+      @for (appt of futureAppointments; track appt.appointment_id) {
+        <div class="appointment-card">
+          <div class="appt-info">
+            <div class="appt-date">{{ appt.appointment_date | date: 'dd/MM/yyyy HH:mm' }}</div>
+            <div class="appt-details">{{ appt.service_name }} — {{ appt.professional_name }}</div>
+            <span class="appt-status" [class]="getStatusClass(appt.status)">{{ getStatusLabel(appt.status) }}</span>
+          </div>
+          @if (appt.status !== 'CANCELLED') {
+            <button class="btn-cancel" (click)="cancelAppointment(appt)" title="Cancelar">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          }
+        </div>
+      }
+    }
+
+    @if (pastAppointments.length > 0) {
+      <div class="section-label">Anteriores</div>
+      @for (appt of pastAppointments; track appt.appointment_id) {
+        <div class="appointment-card past">
+          <div class="appt-info">
+            <div class="appt-date">{{ appt.appointment_date | date: 'dd/MM/yyyy HH:mm' }}</div>
+            <div class="appt-details">{{ appt.service_name }} — {{ appt.professional_name }}</div>
+            <span class="appt-status" [class]="getStatusClass(appt.status)">{{ getStatusLabel(appt.status) }}</span>
+          </div>
+        </div>
+      }
+    }
+
+    @if (appointments.length === 0) {
+      <div class="no-appointments">
+        <mat-icon>event_busy</mat-icon>
+        <p>Nenhum agendamento</p>
+      </div>
+    }
+  }
+</div>

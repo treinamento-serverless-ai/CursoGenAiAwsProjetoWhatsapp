@@ -1,0 +1,11 @@
+{
+  "actionGroup": "ResolveDateReference",
+  "function": "resolve_date_reference",
+  "parameters": [
+    {
+      "name": "reference",
+      "type": "string",
+      "value": "NEXT_WEEK"
+    }
+  ]
+}

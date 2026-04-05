@@ -1,0 +1,74 @@
+<div class="app-layout">
+  <nav class="sidebar" [class.open]="menuOpen">
+    <div class="logo">
+      <mat-icon>calendar_month</mat-icon>
+      Agendente
+    </div>
+
+    <div class="ai-toggle">
+      <span>Modo Agente (IA)</span>
+      <label class="switch">
+        <input type="checkbox" [checked]="aiGlobalEnabled" (change)="toggleAiGlobal()" />
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <ul class="nav-links">
+      <li>
+        <a routerLink="/attendance" routerLinkActive="active" (click)="menuOpen = false">
+          <mat-icon>chat</mat-icon>
+          Atendimento
+        </a>
+      </li>
+      <li>
+        <a routerLink="/calendar" routerLinkActive="active" (click)="menuOpen = false">
+          <mat-icon>calendar_today</mat-icon>
+          Calendario
+        </a>
+      </li>
+      <li>
+        <a routerLink="/appointments" routerLinkActive="active" (click)="menuOpen = false">
+          <mat-icon>event_note</mat-icon>
+          Agendamentos
+        </a>
+      </li>
+      <li>
+        <a routerLink="/professionals" routerLinkActive="active" (click)="menuOpen = false">
+          <mat-icon>person</mat-icon>
+          Profissionais
+        </a>
+      </li>
+      <li>
+        <a routerLink="/services" routerLinkActive="active" (click)="menuOpen = false">
+          <mat-icon>content_cut</mat-icon>
+          Servicos
+        </a>
+      </li>
+      <li>
+        <a routerLink="/clients" routerLinkActive="active" (click)="menuOpen = false">
+          <mat-icon>group</mat-icon>
+          Clientes
+        </a>
+      </li>
+      <li>
+        <a routerLink="/config" routerLinkActive="active" (click)="menuOpen = false">
+          <mat-icon>settings</mat-icon>
+          Configuracoes
+        </a>
+      </li>
+    </ul>
+
+    <button class="logout-btn" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Sair
+    </button>
+  </nav>
+
+  <button class="menu-toggle" (click)="toggleMenu()">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <main class="content">
+    <router-outlet />
+  </main>
+</div>

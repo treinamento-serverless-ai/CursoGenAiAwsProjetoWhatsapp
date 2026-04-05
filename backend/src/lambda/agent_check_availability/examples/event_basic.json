@@ -1,0 +1,14 @@
+{
+  "actionGroup": "CheckAvailability",
+  "function": "check_availability",
+  "parameters": [
+    {
+      "name": "start_date",
+      "type": "string",
+      "value": "2026-02-18"
+    }
+  ],
+  "sessionAttributes": {
+    "userId": "5511999887766"
+  }
+}

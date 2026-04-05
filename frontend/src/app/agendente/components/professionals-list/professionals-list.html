@@ -1,0 +1,100 @@
+<div class="page-container">
+  @if (loading) {
+    <div class="loading-overlay">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <div class="page-header">
+    <h1>Profissionais</h1>
+    <a routerLink="/professionals/new" class="btn-primary">+ Novo Profissional</a>
+  </div>
+
+  <div class="filters-section">
+    <div class="filters-row">
+      <div class="filter-group">
+        <label>Nome:</label>
+        <input
+          type="text"
+          [(ngModel)]="filterName"
+          placeholder="Filtrar por nome"
+          (keyup.enter)="load()"
+        />
+      </div>
+      <div class="filter-group">
+        <label>Status:</label>
+        <select [(ngModel)]="filterActive" (change)="load()">
+          <option value="">Todos</option>
+          <option value="1">Ativos</option>
+          <option value="0">Inativos</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  @if (loading && professionals.length === 0) {
+    <div class="loading">Carregando...</div>
+  } @else if (professionals.length === 0) {
+    <div class="empty">Nenhum profissional cadastrado</div>
+  } @else {
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Especialidade</th>
+            <th>Dias de Trabalho</th>
+            <th>Horário</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (prof of professionals; track prof.professional_id) {
+            <tr [class.inactive]="!prof.is_active">
+              <td>{{ prof.name }}</td>
+              <td>{{ prof.specialty || '-' }}</td>
+              <td>{{ translateDays(prof.working_days) || '-' }}</td>
+              <td>{{ prof.working_hours.start }} - {{ prof.working_hours.end }}</td>
+              <td>
+                <span
+                  class="badge"
+                  [class.active]="prof.is_active"
+                  [class.inactive]="!prof.is_active"
+                >
+                  {{ prof.is_active ? 'Ativo' : 'Inativo' }}
+                </span>
+              </td>
+              <td>
+                <div class="actions">
+                  <a
+                    [routerLink]="['/professionals', prof.professional_id]"
+                    class="icon-btn"
+                    title="Editar"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </a>
+                  <button
+                    (click)="toggleActive(prof)"
+                    class="icon-btn"
+                    [title]="prof.is_active ? 'Desativar' : 'Ativar'"
+                  >
+                    <mat-icon>{{ prof.is_active ? 'delete' : 'check_circle' }}</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (lastKey) {
+      <div class="pagination">
+        <button (click)="loadMore()" [disabled]="loading">
+          {{ loading ? 'Carregando...' : 'Carregar mais' }}
+        </button>
+      </div>
+    }
+  }
+</div>

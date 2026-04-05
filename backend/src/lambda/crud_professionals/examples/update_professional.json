@@ -1,0 +1,7 @@
+{
+  "httpMethod": "PUT",
+  "queryStringParameters": {
+    "id": "prof-edacee77edd0"
+  },
+  "body": "{\"is_active\":false}"
+}

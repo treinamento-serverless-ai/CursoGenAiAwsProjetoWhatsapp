@@ -1,0 +1,27 @@
+<div class="conversation-container">
+  @if (loading && messages.length === 0) {
+    <div class="loading">Carregando conversas...</div>
+  } @else if (messages.length === 0) {
+    <div class="empty">Nenhuma conversa encontrada</div>
+  } @else {
+    <div class="messages">
+      @for (msg of messages; track msg.timestamp) {
+        <div class="message" [class]="msg.sender">
+          <div class="message-header">
+            <span class="sender-badge">{{ getSenderLabel(msg.sender) }}</span>
+            <span class="timestamp">{{ msg.created_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="message-content">{{ msg.content }}</div>
+        </div>
+      }
+    </div>
+
+    @if (lastKey) {
+      <div class="load-more">
+        <button (click)="loadMore()" [disabled]="loading">
+          {{ loading ? 'Carregando...' : 'Carregar mais' }}
+        </button>
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,25 @@
+<div class="home-container">
+  <div class="welcome-card">
+    <h1>Bem-vindo, {{ authService.userInfo()?.name }}!</h1>
+    <p class="subtitle">Sistema de Agendamento Inteligente</p>
+    
+    <div class="quick-links">
+      <a routerLink="/calendar" class="link-card">
+        <h3>Calendário</h3>
+        <p>Visualize agendamentos</p>
+      </a>
+      
+      <a routerLink="/attendance" class="link-card">
+        <h3>Atendimento</h3>
+        <p>Conversas WhatsApp</p>
+      </a>
+      
+      <a routerLink="/clients" class="link-card">
+        <h3>Clientes</h3>
+        <p>Gerenciar clientes</p>
+      </a>
+    </div>
+    
+    <button class="logout-btn" (click)="authService.logout()">Sair</button>
+  </div>
+</div>

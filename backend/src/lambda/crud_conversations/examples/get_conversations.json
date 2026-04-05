@@ -1,0 +1,7 @@
+{
+  "httpMethod": "GET",
+  "queryStringParameters": {
+    "phone_number": "5511988776655",
+    "limit": "50"
+  }
+}

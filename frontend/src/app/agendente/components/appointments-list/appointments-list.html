@@ -1,0 +1,92 @@
+<div class="page-container">
+  @if (loading) {
+    <div class="loading-overlay">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <div class="page-header">
+    <h1>Agendamentos</h1>
+  </div>
+
+  <div class="filters-section">
+    <div class="filters-row">
+      <div class="filter-group">
+        <label>Profissional:</label>
+        <select [(ngModel)]="filterProfessional" (change)="load()">
+          <option value="">Todos os profissionais</option>
+          @for (prof of professionals; track prof.professional_id) {
+            <option [value]="prof.professional_id">{{ prof.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Status:</label>
+        <select [(ngModel)]="filterStatus" (change)="load()">
+          <option value="">Todos os status</option>
+          <option value="PENDING">Pendente</option>
+          <option value="CONFIRMED">Confirmado</option>
+          <option value="CANCELLED">Cancelado</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  @if (loading && appointments.length === 0) {
+    <div class="loading">Carregando...</div>
+  } @else if (appointments.length === 0) {
+    <div class="empty">Nenhum agendamento encontrado</div>
+  } @else {
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Data/Hora</th>
+            <th>Cliente</th>
+            <th>Profissional</th>
+            <th>Serviço</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (appt of appointments; track appt.appointment_id) {
+            <tr>
+              <td>{{ appt.appointment_date | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ appt.client_name }}</td>
+              <td>{{ appt.professional_name }}</td>
+              <td>{{ appt.service_name }}</td>
+              <td>
+                <span class="badge" [class]="appt.status.toLowerCase()">
+                  {{ getStatusLabel(appt.status) }}
+                </span>
+              </td>
+              <td class="actions">
+                <button 
+                  (click)="updateStatus(appt, 'CONFIRMED')" 
+                  class="btn-confirm"
+                  [disabled]="appt.status !== 'PENDING'">
+                  Confirmar
+                </button>
+                <button 
+                  (click)="updateStatus(appt, 'CANCELLED')" 
+                  class="btn-cancel"
+                  [disabled]="appt.status !== 'PENDING'">
+                  Cancelar
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (lastKey) {
+      <div class="pagination">
+        <button (click)="loadMore()" [disabled]="loading">
+          {{ loading ? 'Carregando...' : 'Carregar mais' }}
+        </button>
+      </div>
+    }
+  }
+</div>

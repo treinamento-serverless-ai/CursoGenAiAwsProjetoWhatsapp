@@ -1,0 +1,7 @@
+{
+  "httpMethod": "PUT",
+  "queryStringParameters": {
+    "phone_number": "5511999887766"
+  },
+  "body": "{\"ai_enabled\": false, \"name\": \"Carlos Silva\"}"
+}

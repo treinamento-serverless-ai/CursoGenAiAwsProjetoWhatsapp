@@ -1,0 +1,22 @@
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Chaves e certificados
+*.pem
+
+# Pasta temporária (usada para arquivos não comitados e scripts gerados por IA)
+.temp/
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Arquivos temporários
+*.tmp
+*.bak

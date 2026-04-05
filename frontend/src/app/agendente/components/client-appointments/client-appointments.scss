@@ -1,0 +1,159 @@
+.client-appointments {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+}
+
+.panel-header {
+  padding: 0.75rem 1rem;
+  background: #00a884;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h3 { margin: 0; font-size: 1rem; }
+}
+
+.btn-add {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+
+  &:hover { background: rgba(255, 255, 255, 0.2); }
+}
+
+// Form
+.appointment-form {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  label {
+    font-size: 0.75rem;
+    color: #667781;
+    font-weight: 500;
+  }
+
+  input, select {
+    padding: 0.4rem 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: inherit;
+
+    &:focus { outline: none; border-color: #00a884; }
+  }
+}
+
+.btn-create {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  background: #00a884;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+
+  mat-icon { font-size: 1rem; width: 1rem; height: 1rem; }
+
+  &:hover:not(:disabled) { background: #008f72; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+// List
+.section-label {
+  padding: 0.5rem 0.75rem 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #667781;
+  text-transform: uppercase;
+}
+
+.appointment-card {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+
+  &.past { opacity: 0.6; }
+}
+
+.appt-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.appt-date {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #111;
+}
+
+.appt-details {
+  font-size: 0.8rem;
+  color: #667781;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.appt-status {
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 500;
+
+  &.confirmed { background: #e8f5e9; color: #2e7d32; }
+  &.pending { background: #fff3e0; color: #e65100; }
+  &.cancelled { background: #ffebee; color: #c62828; }
+  &.completed { background: #f5f5f5; color: #616161; }
+}
+
+.btn-cancel {
+  background: transparent;
+  border: none;
+  color: #f44336;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  display: flex;
+
+  &:hover { background: #ffebee; }
+
+  mat-icon { font-size: 1.2rem; width: 1.2rem; height: 1.2rem; }
+}
+
+.loading, .no-appointments {
+  padding: 1.5rem;
+  text-align: center;
+  color: #667781;
+
+  mat-icon {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    opacity: 0.5;
+  }
+
+  p { margin: 0.5rem 0 0; }
+}

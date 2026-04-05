@@ -1,0 +1,55 @@
+openapi: "3.0.1"
+info:
+  title: "whatsapp-webhook-api"
+  description: "API Gateway for WhatsApp webhook (Meta communication only)"
+  version: "2026-02-16"
+servers:
+  - url: "https://whatsapp.example.com"
+
+paths:
+  /:
+    get:
+      summary: "WhatsApp webhook verification"
+      description: "Meta WhatsApp webhook verification endpoint"
+      parameters:
+        - name: "hub.mode"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+        - name: "hub.verify_token"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+        - name: "hub.challenge"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        httpMethod: "POST"
+        uri: "${lambda_conversation_webhook_invoke_arn}"
+        passthroughBehavior: "when_no_match"
+
+    post:
+      summary: "WhatsApp webhook receiver"
+      description: "Receives WhatsApp messages from Meta"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        httpMethod: "POST"
+        uri: "${lambda_conversation_webhook_invoke_arn}"
+        passthroughBehavior: "when_no_match"

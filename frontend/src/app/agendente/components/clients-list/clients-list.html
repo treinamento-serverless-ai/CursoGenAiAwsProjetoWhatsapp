@@ -1,0 +1,102 @@
+<div class="page-container">
+  @if (loading) {
+    <div class="loading-overlay">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <div class="page-header">
+    <h1>Clientes</h1>
+  </div>
+
+  <div class="filters-section">
+    <div class="filters-row">
+      <div class="filter-group">
+        <label>Status IA:</label>
+        <select [(ngModel)]="filterAiEnabled" (change)="load()">
+          <option value="">Todos</option>
+          <option value="1">IA Habilitada</option>
+          <option value="0">IA Desabilitada</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Status Cliente:</label>
+        <select [(ngModel)]="filterBanned" (change)="load()">
+          <option value="">Todos</option>
+          <option value="1">Banidos</option>
+          <option value="0">Nao Banidos</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="search-row">
+      <input type="text" [(ngModel)]="searchName" (input)="applySearch()" placeholder="Buscar por nome" />
+      <input type="text" [(ngModel)]="searchPhone" (input)="applySearch()" placeholder="Buscar por telefone" />
+      <input type="text" [(ngModel)]="searchEmail" (input)="applySearch()" placeholder="Buscar por email" />
+    </div>
+  </div>
+
+  @if (loading && clients.length === 0) {
+    <div class="loading">Carregando...</div>
+  } @else if (filteredClients.length === 0) {
+    <div class="empty">Nenhum cliente encontrado</div>
+  } @else {
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Email</th>
+            <th>IA Habilitada</th>
+            <th>Status</th>
+            <th>Ultima Mensagem</th>
+            <th>Acoes</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (client of filteredClients; track client.phone_number) {
+            <tr [class.banned]="client.is_banned">
+              <td>{{ client.name || 'Sem nome' }}</td>
+              <td>{{ client.phone_number }}</td>
+              <td>{{ client.email || '-' }}</td>
+              <td>
+                <label class="switch">
+                  <input
+                    type="checkbox"
+                    [checked]="client.ai_enabled"
+                    (change)="toggleAi(client)"
+                  />
+                  <span class="slider"></span>
+                </label>
+              </td>
+              <td>
+                <span
+                  class="badge"
+                  [class.banned]="client.is_banned"
+                  [class.active]="!client.is_banned"
+                >
+                  {{ client.is_banned ? 'Banido' : 'Ativo' }}
+                </span>
+              </td>
+              <td>{{ client.last_message_at | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="actions">
+                <a [routerLink]="['/clients', client.phone_number]" class="btn-view"
+                  >Ver Detalhes</a
+                >
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (lastKey) {
+      <div class="pagination">
+        <button (click)="loadMore()" [disabled]="loading">
+          {{ loading ? 'Carregando...' : 'Carregar mais' }}
+        </button>
+      </div>
+    }
+  }
+</div>

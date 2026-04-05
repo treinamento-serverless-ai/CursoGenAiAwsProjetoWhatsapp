@@ -1,0 +1,174 @@
+.config-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  position: relative;
+
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    h1 {
+      font-size: 28px;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .version-controls {
+      mat-form-field {
+        width: 300px;
+      }
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+  }
+
+  mat-card {
+    margin-bottom: 24px;
+
+    mat-card-title {
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    mat-card-content {
+      padding-top: 16px;
+    }
+  }
+
+  .form-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+
+    mat-form-field {
+      flex: 1;
+    }
+
+    mat-slide-toggle {
+      margin-top: 8px;
+    }
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+.deploy-card {
+    background-color: #f5f5f5;
+    border: 2px dashed #ccc;
+
+    .current-description {
+      padding: 12px;
+      background-color: #f9f9f9;
+      border-left: 4px solid #1976d2;
+      margin-bottom: 16px;
+      font-size: 14px;
+      
+      strong {
+        color: #1976d2;
+      }
+    }
+
+    .info-box, .warning-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      
+      mat-icon {
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      
+      p {
+        margin: 0;
+        line-height: 1.5;
+      }
+    }
+
+    .info-box {
+      background-color: #e3f2fd;
+      color: #1565c0;
+      
+      mat-icon {
+        color: #1976d2;
+      }
+    }
+
+    .warning-box {
+      background-color: #fff3e0;
+      color: #e65100;
+      
+      mat-icon {
+        color: #f57c00;
+      }
+    }
+
+    .deploy-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 16px;
+
+      button {
+        mat-icon {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+
+  .versions-card {
+    .versions-list {
+      .version-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .version-info {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+
+          strong {
+            font-size: 14px;
+          }
+
+          .version-desc {
+            font-size: 12px;
+            color: #666;
+          }
+        }
+      }
+    }
+  }
+}

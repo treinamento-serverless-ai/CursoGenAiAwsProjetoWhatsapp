@@ -1,0 +1,158 @@
+<div class="whatsapp-container">
+  @if (loading) {
+    <div class="loading-overlay">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <aside class="contacts-sidebar">
+    <div class="sidebar-header">
+      <h2>Atendimentos</h2>
+      <button class="btn-refresh" (click)="loadOpenAttendances()" [disabled]="loading">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+
+    @if (loading && openAttendances.length === 0) {
+      <div class="loading-contacts">Carregando...</div>
+    } @else if (openAttendances.length === 0) {
+      <div class="no-contacts">
+        <mat-icon>check_circle</mat-icon>
+        <p>Nenhuma conversa ativa</p>
+      </div>
+    } @else {
+      <div class="contacts-list">
+        @for (attendance of openAttendances; track attendance.phone_number) {
+          <div
+            class="contact-item"
+            [class.selected]="selectedAttendance?.phone_number === attendance.phone_number"
+            (click)="selectAttendance(attendance)"
+          >
+            <div class="contact-avatar">
+              {{ (attendance.name || attendance.phone_number).charAt(0).toUpperCase() }}
+            </div>
+            <div class="contact-info">
+              <div class="contact-name">{{ attendance.name || attendance.phone_number }}</div>
+              <div class="contact-preview">
+                {{ attendance.last_message || 'Aguardando atendimento...' }}
+              </div>
+            </div>
+            <div class="contact-meta">
+              <span class="contact-time">{{ getTimeSince(attendance.last_message_at) }}</span>
+              <span
+                class="ai-badge"
+                [class.ai-on]="attendance.ai_enabled"
+                [class.ai-off]="!attendance.ai_enabled"
+              >
+                @if (attendance.ai_enabled) {
+                  <mat-icon class="ai-icon">memory</mat-icon>
+                } @else {
+                  <mat-icon class="ai-icon">person</mat-icon>
+                }
+              </span>
+              @if (attendance.unread_count && attendance.unread_count > 0) {
+                <span class="unread-badge">{{ attendance.unread_count }}</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </aside>
+
+  <!-- Área de chat -->
+  <main class="chat-area">
+    @if (!selectedAttendance) {
+      <div class="no-chat-selected">
+        <div class="placeholder-icon"><mat-icon>chat</mat-icon></div>
+        <h3>Selecione um atendimento</h3>
+        <p>Escolha uma conversa na lista para começar a atender</p>
+      </div>
+    } @else {
+      <!-- Header do chat -->
+      <header class="chat-header">
+        <div class="chat-contact-info">
+          <div class="chat-avatar">
+            {{
+              (selectedAttendance.name || selectedAttendance.phone_number).charAt(0).toUpperCase()
+            }}
+          </div>
+          <div>
+            <div class="chat-name">{{ selectedAttendance.name || 'Cliente' }}</div>
+            <div class="chat-phone">{{ selectedAttendance.phone_number }}</div>
+          </div>
+        </div>
+        <div class="chat-actions">
+          <button
+            class="btn-action"
+            [class.ai-active]="selectedAttendance.ai_enabled"
+            (click)="toggleAi()"
+            [title]="selectedAttendance.ai_enabled ? 'Mudar para atendimento humano' : 'Mudar para atendimento por IA'"
+          >
+            @if (selectedAttendance.ai_enabled) {
+              <mat-icon>person</mat-icon>
+            } @else {
+              <mat-icon>memory</mat-icon>
+            }
+            {{ selectedAttendance.ai_enabled ? 'Trocar para Atendimento Humano' : 'Trocar para Atendimento por IA' }}
+          </button>
+          <button
+            class="btn-action btn-close"
+            (click)="closeAttendance()"
+            title="Encerrar atendimento e arquivar chat"
+          >
+            <mat-icon>archive</mat-icon> Encerrar e Arquivar
+          </button>
+        </div>
+      </header>
+
+      <!-- Mensagens -->
+      <div class="messages-container">
+        @if (loadingMessages) {
+          <div class="loading-messages">Carregando mensagens...</div>
+        } @else if (messages.length === 0) {
+          <div class="no-messages">Nenhuma mensagem ainda</div>
+        } @else {
+          @for (msg of messages; track msg.timestamp) {
+            <div class="message" [class]="msg.sender">
+              <div class="message-bubble">
+                <div class="message-content">{{ msg.content }}</div>
+                <div class="message-meta">
+                  <span class="message-sender">{{ getSenderLabel(msg) }}</span>
+                  <span class="message-time">{{ msg.created_at | date: 'HH:mm' }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      <!-- Input de mensagem -->
+      <footer class="message-input-area">
+        <textarea
+          [(ngModel)]="newMessage"
+          placeholder="Digite sua mensagem..."
+          (keypress)="onKeyPress($event)"
+          [disabled]="sending"
+          rows="1"
+        ></textarea>
+        <button class="btn-send" (click)="sendMessage()" [disabled]="!newMessage.trim() || sending">
+          @if (sending) {
+            ...
+          } @else {
+            <mat-icon>send</mat-icon>
+          }
+        </button>
+      </footer>
+    }
+  </main>
+
+  @if (selectedAttendance) {
+    <aside class="appointments-sidebar">
+      <app-client-appointments
+        [clientPhone]="selectedAttendance.phone_number"
+        [clientName]="selectedAttendance.name || selectedAttendance.phone_number"
+      />
+    </aside>
+  }
+</div>

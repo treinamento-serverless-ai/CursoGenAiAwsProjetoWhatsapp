@@ -1,0 +1,83 @@
+<div class="page-container">
+  @if (loading) {
+    <div class="loading-overlay">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <div class="page-header">
+    <h1>Detalhes do Cliente</h1>
+    <a routerLink="/clients" class="btn-back">Voltar</a>
+  </div>
+
+  @if (loading) {
+    <div class="loading">Carregando...</div>
+  } @else if (client) {
+    <div class="client-info">
+      <div class="info-card">
+        <div class="card-header">
+          <h2>Informacoes</h2>
+          @if (!editing) {
+            <button class="btn-edit" (click)="startEdit()">Editar</button>
+          }
+        </div>
+
+        @if (editing) {
+          <div class="edit-form">
+            <div class="form-group">
+              <label>Nome:</label>
+              <input type="text" [(ngModel)]="editForm.name" />
+            </div>
+            <div class="form-group">
+              <label>Email:</label>
+              <input type="email" [(ngModel)]="editForm.email" />
+            </div>
+            <div class="form-group">
+              <label>Telefone:</label>
+              <input type="text" [value]="client.phone_number" disabled />
+            </div>
+            <div class="form-actions">
+              <button class="btn-save" (click)="saveEdit()">Salvar</button>
+              <button class="btn-cancel" (click)="cancelEdit()">Cancelar</button>
+            </div>
+          </div>
+        } @else {
+          <div class="info-row">
+            <span class="label">Nome:</span>
+            <span>{{ client.name || 'Nao informado' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Telefone:</span>
+            <span>{{ client.phone_number }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Email:</span>
+            <span>{{ client.email || 'Nao informado' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Cadastrado em:</span>
+            <span>{{ client.created_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="controls-card">
+        <h2>Controles</h2>
+        <div class="control-row">
+          <span>IA Habilitada</span>
+          <label class="switch">
+            <input type="checkbox" [checked]="client.ai_enabled" (change)="toggleAi()" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="control-row">
+          <span>Cliente Banido</span>
+          <label class="switch">
+            <input type="checkbox" [checked]="client.is_banned" (change)="toggleBanned()" />
+            <span class="slider banned"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  }
+</div>

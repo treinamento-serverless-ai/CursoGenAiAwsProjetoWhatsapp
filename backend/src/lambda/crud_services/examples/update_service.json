@@ -1,0 +1,7 @@
+{
+  "httpMethod": "PUT",
+  "queryStringParameters": {
+    "id": "svc-001"
+  },
+  "body": "{\"is_active\":false}"
+}

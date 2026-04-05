@@ -1,0 +1,896 @@
+openapi: "3.0.1"
+info:
+  title: "agendente-api"
+  description: "API Gateway for Agendente admin operations and frontend"
+  version: "2026-02-21"
+servers:
+  - url: "https://api.agendente.example.com"
+
+x-amazon-apigateway-gateway-responses:
+  UNAUTHORIZED:
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Origin: "'${cors_allowed_origins}'"
+      gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Api-Key'"
+      gatewayresponse.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+    statusCode: 401
+
+security:
+  - CognitoAuthorizer: []
+
+paths:
+  # Health check endpoint
+  /health:
+    get:
+      summary: "Health check"
+      security: []
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  status:
+                    type: "string"
+                    example: "healthy"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'${cors_allowed_origins}'"
+            responseTemplates:
+              application/json: '{"status":"healthy","service":"agendente"}'
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        passthroughBehavior: "when_no_match"
+
+  # Appointments
+  /api/appointments:
+    get:
+      summary: "List appointments"
+      parameters:
+        - name: "professional_id"
+          in: "query"
+          schema:
+            type: "string"
+            example: "prof-001"
+        - name: "client_phone"
+          in: "query"
+          schema:
+            type: "string"
+            example: "5511999887766"
+        - name: "status"
+          in: "query"
+          schema:
+            type: "string"
+            enum: ["CONFIRMED", "PENDING", "CANCELLED", "COMPLETED"]
+        - name: "page_size"
+          in: "query"
+          schema:
+            type: "integer"
+            default: 25
+      responses:
+        "200":
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  items:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/Appointment"
+                  page_size:
+                    type: "integer"
+                  last_evaluated_key:
+                    type: "object"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_appointments_invoke_arn}"
+        httpMethod: "POST"
+
+    post:
+      summary: "Create appointment"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentCreate"
+      responses:
+        "201":
+          description: "201 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_appointments_invoke_arn}"
+        httpMethod: "POST"
+
+    put:
+      summary: "Update appointment"
+      parameters:
+        - name: "id"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                status:
+                  type: "string"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_appointments_invoke_arn}"
+        httpMethod: "POST"
+
+    delete:
+      summary: "Cancel appointment"
+      parameters:
+        - name: "id"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_appointments_invoke_arn}"
+        httpMethod: "POST"
+
+    options:
+      security: []
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        passthroughBehavior: "when_no_match"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              method.response.header.Access-Control-Allow-Origin: "'${cors_allowed_origins}'"
+
+  # Professionals
+  /api/professionals:
+    get:
+      summary: "List professionals"
+      parameters:
+        - name: "is_active"
+          in: "query"
+          schema:
+            type: "string"
+            enum: ["0", "1"]
+        - name: "page_size"
+          in: "query"
+          schema:
+            type: "integer"
+            default: 25
+      responses:
+        "200":
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  items:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/Professional"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_professionals_invoke_arn}"
+        httpMethod: "POST"
+
+    post:
+      summary: "Create professional"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfessionalCreate"
+      responses:
+        "201":
+          description: "201 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_professionals_invoke_arn}"
+        httpMethod: "POST"
+
+    put:
+      summary: "Update professional"
+      parameters:
+        - name: "id"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_professionals_invoke_arn}"
+        httpMethod: "POST"
+
+    delete:
+      summary: "Deactivate professional"
+      parameters:
+        - name: "id"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_professionals_invoke_arn}"
+        httpMethod: "POST"
+
+    options:
+      security: []
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        passthroughBehavior: "when_no_match"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              method.response.header.Access-Control-Allow-Origin: "'${cors_allowed_origins}'"
+
+  # Services
+  /api/services:
+    get:
+      summary: "List services"
+      parameters:
+        - name: "is_active"
+          in: "query"
+          schema:
+            type: "string"
+        - name: "category"
+          in: "query"
+          schema:
+            type: "string"
+            example: "Cabelo"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_services_invoke_arn}"
+        httpMethod: "POST"
+
+    post:
+      summary: "Create service"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceCreate"
+      responses:
+        "201":
+          description: "201 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_services_invoke_arn}"
+        httpMethod: "POST"
+
+    put:
+      summary: "Update service"
+      parameters:
+        - name: "id"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_services_invoke_arn}"
+        httpMethod: "POST"
+
+    delete:
+      summary: "Deactivate service"
+      parameters:
+        - name: "id"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_services_invoke_arn}"
+        httpMethod: "POST"
+
+    options:
+      security: []
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        passthroughBehavior: "when_no_match"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              method.response.header.Access-Control-Allow-Origin: "'${cors_allowed_origins}'"
+
+  # Clients
+  /api/clients:
+    get:
+      summary: "List clients"
+      parameters:
+        - name: "phone_number"
+          in: "query"
+          schema:
+            type: "string"
+            example: "5511999887766"
+        - name: "is_banned"
+          in: "query"
+          schema:
+            type: "string"
+        - name: "ai_enabled"
+          in: "query"
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_clients_invoke_arn}"
+        httpMethod: "POST"
+
+    put:
+      summary: "Update client"
+      parameters:
+        - name: "phone_number"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                ai_enabled:
+                  type: "boolean"
+                is_banned:
+                  type: "boolean"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_clients_invoke_arn}"
+        httpMethod: "POST"
+
+    options:
+      security: []
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        passthroughBehavior: "when_no_match"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'GET,PUT,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Origin: "'${cors_allowed_origins}'"
+
+  # Conversations
+  /api/conversations:
+    get:
+      summary: "Get conversation history"
+      parameters:
+        - name: "phone_number"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+            example: "5511999887766"
+        - name: "limit"
+          in: "query"
+          schema:
+            type: "integer"
+            default: 50
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_conversations_invoke_arn}"
+        httpMethod: "POST"
+
+    options:
+      security: []
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        passthroughBehavior: "when_no_match"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              method.response.header.Access-Control-Allow-Origin: "'${cors_allowed_origins}'"
+
+  # Attendance (human takeover)
+  /api/attendance:
+    get:
+      summary: "List open attendances"
+      parameters:
+        - name: "page_size"
+          in: "query"
+          schema:
+            type: "integer"
+            default: 25
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_attendance_invoke_arn}"
+        httpMethod: "POST"
+
+    options:
+      security: []
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        passthroughBehavior: "when_no_match"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Origin: "'${cors_allowed_origins}'"
+
+  /api/attendance/message:
+    post:
+      summary: "Send message as human attendant"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - phone_number
+                - content
+              properties:
+                phone_number:
+                  type: "string"
+                content:
+                  type: "string"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_attendance_invoke_arn}"
+        httpMethod: "POST"
+
+    options:
+      security: []
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        passthroughBehavior: "when_no_match"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Origin: "'${cors_allowed_origins}'"
+
+  /api/attendance/close:
+    post:
+      summary: "Close attendance and re-enable AI"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - phone_number
+              properties:
+                phone_number:
+                  type: "string"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_attendance_invoke_arn}"
+        httpMethod: "POST"
+
+    options:
+      security: []
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        passthroughBehavior: "when_no_match"
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization,X-Api-Key'"
+              method.response.header.Access-Control-Allow-Origin: "'${cors_allowed_origins}'"
+
+  # Config
+  /api/config:
+    get:
+      summary: "Get configuration"
+      parameters:
+        - name: "version"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            example: "5"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_config_invoke_arn}"
+        httpMethod: "POST"
+
+    put:
+      summary: "Update configuration"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_config_invoke_arn}"
+        httpMethod: "POST"
+
+    delete:
+      summary: "Delete configuration version"
+      parameters:
+        - name: "version"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+            example: "5"
+      responses:
+        "200":
+          description: "200 response"
+      x-amazon-apigateway-integration:
+        type: "aws_proxy"
+        uri: "${lambda_crud_config_invoke_arn}"
+        httpMethod: "POST"
+
+    options:
+      security: []
+      responses:
+        "200":
+          description: "200 response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+      x-amazon-apigateway-integration:
+        type: "mock"
+        requestTemplates:
+          application/json: '{"statusCode": 200}'
+        responses:
+          default:
+            statusCode: "200"
+            responseParameters:
+              method.response.header.Access-Control-Allow-Methods: "'GET,PUT,DELETE,OPTIONS'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+              method.response.header.Access-Control-Allow-Origin: "'${cors_allowed_origins}'"
+        passthroughBehavior: "when_no_match"
+
+components:
+  securitySchemes:
+    CognitoAuthorizer:
+      type: "apiKey"
+      name: "Authorization"
+      in: "header"
+      x-amazon-apigateway-authtype: "cognito_user_pools"
+      x-amazon-apigateway-authorizer:
+        type: "cognito_user_pools"
+        providerARNs:
+          - "${cognito_user_pool_arn}"
+  schemas:
+    Appointment:
+      type: "object"
+      properties:
+        appointment_id:
+          type: "string"
+          example: "appt-001"
+        appointment_date:
+          type: "string"
+          example: "2026-02-22T10:00:00"
+        client_name:
+          type: "string"
+          example: "Carlos Teste"
+        client_phone:
+          type: "string"
+          example: "5511999887766"
+        professional_id:
+          type: "string"
+          example: "prof-001"
+        professional_name:
+          type: "string"
+          example: "João Silva"
+        service_id:
+          type: "string"
+          example: "svc-001"
+        service_name:
+          type: "string"
+          example: "Corte de Cabelo"
+        status:
+          type: "string"
+          enum: ["CONFIRMED", "PENDING", "CANCELLED", "COMPLETED"]
+
+    AppointmentCreate:
+      type: "object"
+      required:
+        - appointment_id
+        - appointment_date
+        - client_phone
+        - professional_id
+        - service_id
+      properties:
+        appointment_id:
+          type: "string"
+        appointment_date:
+          type: "string"
+        client_name:
+          type: "string"
+        client_phone:
+          type: "string"
+        professional_id:
+          type: "string"
+        professional_name:
+          type: "string"
+        service_id:
+          type: "string"
+        service_name:
+          type: "string"
+        status:
+          type: "string"
+
+    Professional:
+      type: "object"
+      properties:
+        professional_id:
+          type: "string"
+          example: "prof-001"
+        name:
+          type: "string"
+          example: "João Silva"
+        specialty:
+          type: "string"
+          example: "Corte de cabelo cacheado"
+        working_days:
+          type: "array"
+          items:
+            type: "string"
+          example: ["monday", "tuesday", "wednesday"]
+        working_hours:
+          type: "object"
+          properties:
+            start:
+              type: "string"
+              example: "09:00"
+            end:
+              type: "string"
+              example: "18:00"
+
+    ProfessionalCreate:
+      type: "object"
+      required:
+        - professional_id
+        - name
+        - working_days
+        - working_hours
+        - services
+        - scheduling_policy
+      properties:
+        professional_id:
+          type: "string"
+        name:
+          type: "string"
+        specialty:
+          type: "string"
+        working_days:
+          type: "array"
+          items:
+            type: "string"
+        working_hours:
+          type: "object"
+        services:
+          type: "array"
+          items:
+            type: "object"
+        scheduling_policy:
+          type: "object"
+
+    ServiceCreate:
+      type: "object"
+      required:
+        - service_id
+        - name
+      properties:
+        service_id:
+          type: "string"
+          example: "svc-001"
+        name:
+          type: "string"
+          example: "Corte de Cabelo"
+        description:
+          type: "string"
+          example: "Corte masculino tradicional"
+        category:
+          type: "string"
+          example: "Cabelo"
+        is_active:
+          type: "boolean"

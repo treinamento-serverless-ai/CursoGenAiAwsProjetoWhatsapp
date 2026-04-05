@@ -1,0 +1,4 @@
+{
+  "httpMethod": "POST",
+  "body": "{\"name\":\"Corte de Cabelo\",\"description\":\"Corte masculino tradicional\",\"category\":\"Cabelo\",\"is_active\":true}"
+}

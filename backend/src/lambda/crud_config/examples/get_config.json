@@ -1,0 +1,16 @@
+{
+  "httpMethod": "GET",
+  "path": "/api/config",
+  "headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer mock-token"
+  },
+  "requestContext": {
+    "authorizer": {
+      "claims": {
+        "sub": "user-123",
+        "email": "admin@example.com"
+      }
+    }
+  }
+}

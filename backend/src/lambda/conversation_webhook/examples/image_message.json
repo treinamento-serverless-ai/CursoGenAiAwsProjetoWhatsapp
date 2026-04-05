@@ -1,0 +1,72 @@
+{
+    "resource": "/",
+    "path": "/",
+    "httpMethod": "POST",
+    "headers": {
+        "accept": "*/*",
+        "accept-encoding": "deflate, gzip",
+        "content-type": "application/json",
+        "Host": "whatsapp.dev.example.serverlessai.click",
+        "User-Agent": "facebookexternalua",
+        "X-Forwarded-For": "173.252.127.7",
+        "X-Hub-Signature": "sha1=7c48b116309b08b35581419e1588da120f42057a",
+        "X-Hub-Signature-256": "sha256=93446615c034b12c3e8bb73ff601a67e9ed023f9c6aceb8caeeaf41b92add201"
+    },
+    "multiValueHeaders": {
+        "accept": ["*/*"],
+        "accept-encoding": ["deflate, gzip"],
+        "content-type": ["application/json"],
+        "Host": ["whatsapp.dev.example.serverlessai.click"],
+        "User-Agent": ["facebookexternalua"],
+        "X-Forwarded-For": ["173.252.127.7"],
+        "X-Hub-Signature": ["sha1=7c48b116309b08b35581419e1588da120f42057a"],
+        "X-Hub-Signature-256": ["sha256=93446615c034b12c3e8bb73ff601a67e9ed023f9c6aceb8caeeaf41b92add201"]
+    },
+    "queryStringParameters": null,
+    "multiValueQueryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+        "resourceId": "cqcpry7zc7",
+        "resourcePath": "/",
+        "httpMethod": "POST",
+        "extendedRequestId": "Y5eONEtIoAMF3ww=",
+        "requestTime": "16/Feb/2026:23:38:02 +0000",
+        "path": "/",
+        "accountId": "471112955224",
+        "protocol": "HTTP/1.1",
+        "stage": "dev",
+        "domainPrefix": "whatsapp",
+        "requestTimeEpoch": 1771285082512,
+        "requestId": "f43f2cb6-0ae3-43f1-b954-b924f0cd40c8",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "clientCert": {
+                "clientCertPem": "-----BEGIN CERTIFICATE-----\nMIIG7DCCBdSgAwIBAgIQBPNHkJA4bCvWbqWyWpJKwTANBgkqhkiG9w0BAQsFADBw\nMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3\nd3cuZGlnaWNlcnQuY29tMS8wLQYDVQQDEyZEaWdpQ2VydCBTSEEyIEhpZ2ggQXNz\ndXJhbmNlIFNlcnZlciBDQTAeFw0yNTA3MzEwMDAwMDBaFw0yNjA0MTQyMzU5NTla\nMIGCMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTETMBEGA1UEBxMK\nTWVubG8gUGFyazEdMBsGA1UEChMUTWV0YSBQbGF0Zm9ybXMsIEluYy4xKjAoBgNV\nBAMTIWNsaWVudC53ZWJob29rcy5mYmNsaWVudGNlcnRzLmNvbTCCASIwDQYJKoZI\nhvcNAQEBBQADggEPADCCAQoCggEBAMSHxOiZidFxswl/3LABaqBNv9zCNyVNY4VI\nI5WFQ+Ja9LbMrXRCDR9hcMOckzbePdJbTdT04rDOIAbWkioUi3/bhfTubmX8nOQx\n/RZgT/89r8Wc7ZeeShZu67yWsb8rxXW51ZsI8KjXaN2iq31Ko4oEJE+bY17HUxd2\nKIsmRYmEMljEvRTza9ZUMkHZrXDhr7UZDjeAIw1RmQ/BAdLoor3YsPYLLwbkw3JO\nNAytaY8QV2e6k+XRVp4S3cxuARytc1wZ21h40/CjCzHEF7sI+e0leVV+6Gz3autX\nNKagWdmvLuyLk+CbCnkvolDWgW7hEMUq0UDis5POP75yKJnUmRkCAwEAAaOCA20w\nggNpMB8GA1UdIwQYMBaAFFFo/5CvAgd1PMzZZWRiohK4WXI7MB0GA1UdDgQWBBRN\ngk1DWjd+4CfVjUiW+cwINPCC6TAsBgNVHREEJTAjgiFjbGllbnQud2ViaG9va3Mu\nZmJjbGllbnRjZXJ0cy5jb20wPgYDVR0gBDcwNTAzBgZngQwBAgIwKTAnBggrBgEF\nBQcCARYbaHR0cDovL3d3dy5kaWdpY2VydC5jb20vQ1BTMA4GA1UdDwEB/wQEAwIF\noDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwdQYDVR0fBG4wbDA0oDKg\nMIYuaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL3NoYTItaGEtc2VydmVyLWc2LmNy\nbDA0oDKgMIYuaHR0cDovL2NybDQuZGlnaWNlcnQuY29tL3NoYTItaGEtc2VydmVy\nLWc2LmNybDCBgwYIKwYBBQUHAQEEdzB1MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz\ncC5kaWdpY2VydC5jb20wTQYIKwYBBQUHMAKGQWh0dHA6Ly9jYWNlcnRzLmRpZ2lj\nZXJ0LmNvbS9EaWdpQ2VydFNIQTJIaWdoQXNzdXJhbmNlU2VydmVyQ0EuY3J0MAwG\nA1UdEwEB/wQCMAAwggF9BgorBgEEAdZ5AgQCBIIBbQSCAWkBZwB2AA5XlLzzrqk+\nMxssmQez95Dfm8I9cTIl3SGpJaxhxU4hAAABmGJpA44AAAQDAEcwRQIhAPnN4rS8\n2aT9BWQvGPMZK1Kg0y2OPpjJ2ViScAjOfdAlAiADGGgYtgJVDbvUZzPknRmnN8cC\nW4NHnatyV+LMrhCyVAB2AGQRxGykEuyniRyiAi4AvKtPKAfUHjUnq+r+1QPJfc3w\nAAABmGJpA70AAAQDAEcwRQIhAKVeJK167OV2CsYTcYJ7DydSqHVYAIwMTbYE53+l\nyBsOAiAtM+pwmNem4SoztczAaYZdvFx8LSUBLS653FRaV/+QjwB1AEmcm2neHXzs\n/DbezYdkprhbrwqHgBnRVVL76esp3fjDAAABmGJpA88AAAQDAEYwRAIgEjc/sEEz\n+EsdwWiJT0b3RwMxrbnAI1PYBM0Xutc9lQoCIFxiy6eaqSU/njQ/VFCW7WoL+QAw\n6d+O7BJGx5ADbxNkMA0GCSqGSIb3DQEBCwUAA4IBAQAbEdxm8PpT8BL0EHz3wEyT\nnPhnwTPGjnWEUgWwfNI3VBX3WD1/23EGvWlcswUYBeEcNdqe+k7vFRfotx8wLvPx\nH9WSxOOpMo762SSS/a/lpgEuShXQ9XHCsJzn/3OPXaZsmak+sDjr9N6kb3QjbWq4\norDtAOqZNx1BDaXCyGUHUYwqhtLuVbtpPyPf24oTcje7qWdolUtYTl9OLXdw/7nq\nigK/mKSvMF79qfoBOHQgJXT43n3Z6qHyUPEVMtuiHTfJQhFMm/Q5ivEANvtzSvGO\n/K7WTogLY9pr2jIwKLIWVRS7KPyEgZfiGfH1r+dHW9TaNtm123bI/8Swd5KzkLLX\n-----END CERTIFICATE-----\n",
+                "serialNumber": "6580091624334940012426576352634882753",
+                "issuerDN": "C=US,O=DigiCert Inc,OU=www.digicert.com,CN=DigiCert SHA2 High Assurance Server CA",
+                "validity": {
+                    "notAfter": "Apr 14 23:59:59 2026 GMT",
+                    "notBefore": "Jul 31 00:00:00 2025 GMT"
+                },
+                "subjectDN": "C=US,ST=California,L=Menlo Park,O=Meta Platforms, Inc.,CN=client.webhooks.fbclientcerts.com"
+            },
+            "cognitoIdentityId": null,
+            "principalOrgId": null,
+            "cognitoAuthenticationType": null,
+            "userArn": null,
+            "userAgent": "facebookexternalua",
+            "accountId": null,
+            "caller": null,
+            "sourceIp": "173.252.127.7",
+            "accessKey": null,
+            "cognitoAuthenticationProvider": null,
+            "user": null
+        },
+        "domainName": "whatsapp.dev.example.serverlessai.click",
+        "deploymentId": "65zn36",
+        "apiId": "uoi4fopp23"
+    },
+    "body": "{\"object\":\"whatsapp_business_account\",\"entry\":[{\"id\":\"554658971039670\",\"changes\":[{\"value\":{\"messaging_product\":\"whatsapp\",\"metadata\":{\"display_phone_number\":\"15556522370\",\"phone_number_id\":\"609253768946096\"},\"contacts\":[{\"profile\":{\"name\":\"Example User\"},\"wa_id\":\"5511988887777\"}],\"messages\":[{\"from\":\"5511988887777\",\"id\":\"wamid.HBgNNTUxMTk3MzAwMjM5OBUCABIYFjNFQjA1MTgyQjg4RTUyNjExOTgxQkMA\",\"timestamp\":\"1771285079\",\"type\":\"image\",\"image\":{\"mime_type\":\"image\\/jpeg\",\"sha256\":\"pRwTyyTspBcD3QavpEMMDxiWp201BcHwO3hu+sHxbkg=\",\"id\":\"2691372411215624\",\"url\":\"https:\\/\\/lookaside.fbsbx.com\\/whatsapp_business\\/attachments\\/?mid=2691372411215624&source=webhook&ext=1771285381&hash=ARl5tTudiR315NXcnYdyDE0kmb5A7G9St9QOfsETJ5926g\"}}]},\"field\":\"messages\"}]}]}",
+    "isBase64Encoded": false
+}

@@ -1,0 +1,13 @@
+{
+  "actionGroup": "GetServiceDetails",
+  "function": "get_service_details",
+  "parameters": [
+    {
+      "name": "service_id",
+      "value": "svc-001"
+    }
+  ],
+  "sessionAttributes": {
+    "userId": "5511999887766"
+  }
+}

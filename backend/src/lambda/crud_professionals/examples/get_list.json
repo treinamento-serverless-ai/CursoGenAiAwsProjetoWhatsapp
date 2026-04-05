@@ -1,0 +1,7 @@
+{
+  "httpMethod": "GET",
+  "queryStringParameters": {
+    "page_size": "25",
+    "is_active": "1"
+  }
+}

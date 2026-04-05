@@ -1,0 +1,13 @@
+{
+  "actionGroup": "CancelAppointment",
+  "function": "cancel_appointment",
+  "parameters": [
+    {
+      "name": "appointment_id",
+      "value": "appt-001"
+    }
+  ],
+  "sessionAttributes": {
+    "userId": "5511999887766"
+  }
+}

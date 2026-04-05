@@ -1,0 +1,4 @@
+{
+  "httpMethod": "POST",
+  "body": "{\"name\":\"Joao Silva\",\"specialty\":\"Cabelereiro\",\"working_days\":[\"monday\",\"tuesday\"],\"working_hours\":{\"start\":\"09:00\",\"end\":\"18:00\"},\"services\":[{\"service_id\":\"svc-001\",\"service_name\":\"Corte\",\"duration_hours\":0.5,\"price\":50}],\"scheduling_policy\":{\"type\":\"FLEXIBLE_MINUTES\",\"allowed_start_minutes\":[0,30],\"slot_window_hours\":1},\"is_active\":true}"
+}

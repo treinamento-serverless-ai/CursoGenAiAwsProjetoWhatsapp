@@ -1,0 +1,234 @@
+<div class="config-container">
+  @if (loading) {
+    <div class="loading-overlay">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <div class="header">
+    <h1>Configurações do Sistema</h1>
+    
+    <div class="version-controls">
+      <mat-form-field>
+        <mat-label>Versão</mat-label>
+        <mat-select [(ngModel)]="selectedVersion" (selectionChange)="onVersionChange()">
+          <mat-option value="latest">Latest (v{{ latestVersion }})</mat-option>
+          @for (v of availableVersions; track v.version) {
+            <mat-option [value]="v.version.toString()">
+              Versão {{ v.version }}{{ v.description ? ' - ' + v.description : '' }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <form>
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Horário de Funcionamento</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field>
+              <mat-label>Abertura</mat-label>
+              <input matInput type="time" [(ngModel)]="config.business_hours_start" name="business_hours_start" required />
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Fechamento</mat-label>
+              <input matInput type="time" [(ngModel)]="config.business_hours_end" name="business_hours_end" required />
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Fuso Horário</mat-label>
+              <input matInput [(ngModel)]="config.business_hours_timezone" name="business_hours_timezone" 
+                     placeholder="America/Sao_Paulo" required />
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Configurações de Agendamento</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-form-field>
+              <mat-label>Dias máximos para agendar</mat-label>
+              <input matInput type="number" [(ngModel)]="config.max_booking_days" name="max_booking_days" />
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Threshold de inatividade (segundos)</mat-label>
+              <input matInput type="number" [(ngModel)]="config.inactivity_threshold_seconds" name="inactivity_threshold_seconds" />
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Configurações de Áudio</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-slide-toggle 
+              [checked]="isTrue(config.transcribe_enabled)" 
+              (change)="setBoolean('transcribe_enabled', $event.checked)">
+              Transcrição habilitada
+            </mat-slide-toggle>
+          </div>
+          <div class="form-row">
+            <mat-form-field>
+              <mat-label>Período de graça (segundos)</mat-label>
+              <input matInput type="number" [(ngModel)]="config.audio_processing_grace_period" name="audio_processing_grace_period" />
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Tamanho mínimo (KB)</mat-label>
+              <input matInput type="number" [(ngModel)]="config.audio_min_size_kb" name="audio_min_size_kb" />
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Tamanho máximo (KB)</mat-label>
+              <input matInput type="number" [(ngModel)]="config.audio_max_size_kb" name="audio_max_size_kb" />
+            </mat-form-field>
+          </div>
+          <mat-form-field class="full-width">
+            <mat-label>Mensagem de transcrição desabilitada</mat-label>
+            <textarea matInput [(ngModel)]="config.transcribe_disabled_message" name="transcribe_disabled_message" rows="3" 
+                      placeholder="Desculpe, não consigo processar mensagens de áudio no momento. Por favor, envie sua mensagem em texto." 
+                      required></textarea>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Mensagens Automáticas</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field class="full-width">
+            <mat-label>Mensagem de loja fechada</mat-label>
+            <textarea matInput [(ngModel)]="config.closed_message" name="closed_message" rows="3" 
+                      placeholder="Olá! Nosso horário de atendimento é das __HORARIO_INICIO__ às __HORARIO_FIM__. Por favor, retorne durante o horário de funcionamento." 
+                      required></textarea>
+          </mat-form-field>
+          <mat-form-field class="full-width">
+            <mat-label>Mensagem de usuário banido</mat-label>
+            <textarea matInput [(ngModel)]="config.banned_message" name="banned_message" rows="3" 
+                      placeholder="Desculpe, não conseguimos processar sua mensagem no momento. Por favor, entre em contato via telefone para atendimento." 
+                      required></textarea>
+          </mat-form-field>
+          <mat-form-field class="full-width">
+            <mat-label>Mensagem de erro da IA</mat-label>
+            <textarea matInput [(ngModel)]="config.ai_error_message" name="ai_error_message" rows="3" 
+                      placeholder="Desculpe, estou com dificuldades técnicas no momento. Um atendente humano entrará em contato em breve." 
+                      required></textarea>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Configurações Avançadas</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <mat-slide-toggle 
+              [checked]="isTrue(config.save_messages_after_hours)" 
+              (change)="setBoolean('save_messages_after_hours', $event.checked)">
+              Salvar mensagens fora do horário
+            </mat-slide-toggle>
+          </div>
+          <div class="form-row">
+            <mat-slide-toggle 
+              [checked]="isTrue(config.reply_with_context)" 
+              (change)="setBoolean('reply_with_context', $event.checked)">
+              Responder com contexto
+            </mat-slide-toggle>
+          </div>
+          <div class="form-row">
+            <mat-slide-toggle 
+              [checked]="isTrue(config.reply_context_use_last)" 
+              (change)="setBoolean('reply_context_use_last', $event.checked)">
+              Usar último contexto
+            </mat-slide-toggle>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="deploy-card">
+        <mat-card-header>
+          <mat-card-title>
+            @if (isViewingLatest()) {
+              Salvar Configuração
+            } @else {
+              Visualizando Versão Antiga
+            }
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (isViewingLatest()) {
+            <div class="info-box">
+              <mat-icon>info</mat-icon>
+              <p>A aplicação sempre usa a versão <strong>latest</strong>. Você pode atualizar a configuração atual ou criar um snapshot imutável para backup.</p>
+            </div>
+            
+            @if (currentDescription) {
+              <div class="current-description">
+                <strong>Descrição atual:</strong> {{ currentDescription }}
+              </div>
+            }
+            
+            <mat-form-field class="full-width">
+              <mat-label>Nova descrição</mat-label>
+              <input matInput [(ngModel)]="description" name="description" 
+                     placeholder="Ex: Ajuste de horário comercial"
+                     required />
+              <mat-hint>Obrigatória para criar snapshot</mat-hint>
+            </mat-form-field>
+            
+            <div class="deploy-actions">
+              <button mat-raised-button color="primary" (click)="updateCurrent()" [disabled]="saving" type="button">
+                <mat-icon>save</mat-icon>
+                {{ saving ? 'Salvando...' : 'Atualizar Configuração Atual' }}
+              </button>
+              
+              <button mat-raised-button color="accent" (click)="createSnapshot()" [disabled]="saving || !description.trim()" type="button">
+                <mat-icon>camera_alt</mat-icon>
+                {{ saving ? 'Criando...' : 'Criar Snapshot (Backup)' }}
+              </button>
+            </div>
+          } @else {
+            <div class="warning-box">
+              <mat-icon>warning</mat-icon>
+              <p>Você está visualizando uma versão antiga (v{{ selectedVersion }}). Versões antigas são imutáveis e não podem ser editadas. Selecione "Latest" para fazer alterações.</p>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    </form>
+
+    @if (availableVersions.length > 0) {
+      <mat-card class="versions-card">
+        <mat-card-header>
+          <mat-card-title>Versões Disponíveis</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="versions-list">
+            @for (v of availableVersions; track v.version) {
+              <div class="version-item">
+                <div class="version-info">
+                  <strong>Versão {{ v.version }}</strong>
+                  @if (v.description) {
+                    <span class="version-desc">{{ v.description }}</span>
+                  }
+                </div>
+                <button mat-icon-button color="warn" (click)="deleteVersion(v.version)" type="button">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+</div>

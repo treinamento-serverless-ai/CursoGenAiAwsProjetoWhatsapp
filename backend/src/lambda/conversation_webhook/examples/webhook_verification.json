@@ -1,0 +1,70 @@
+{
+    "resource": "/webhook/whatsapp",
+    "path": "/webhook/whatsapp",
+    "httpMethod": "GET",
+    "headers": {
+        "Accept": "*/*",
+        "Accept-Encoding": "deflate, gzip",
+        "Host": "xxxxxxxxxx.execute-api.us-east-1.amazonaws.com",
+        "User-Agent": "facebookplatform/1.0 (+http://developers.facebook.com)",
+        "X-Amzn-Trace-Id": "Root=1-xxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx",
+        "X-Forwarded-For": "173.252.xxx.xxx",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+        "Accept": ["*/*"],
+        "Accept-Encoding": ["deflate, gzip"],
+        "Host": ["xxxxxxxxxx.execute-api.us-east-1.amazonaws.com"],
+        "User-Agent": ["facebookplatform/1.0 (+http://developers.facebook.com)"],
+        "X-Amzn-Trace-Id": ["Root=1-xxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx"],
+        "X-Forwarded-For": ["173.252.xxx.xxx"],
+        "X-Forwarded-Port": ["443"],
+        "X-Forwarded-Proto": ["https"]
+    },
+    "queryStringParameters": {
+        "hub.challenge": "1234567890",
+        "hub.mode": "subscribe",
+        "hub.verify_token": "YOUR_VERIFY_TOKEN"
+    },
+    "multiValueQueryStringParameters": {
+        "hub.challenge": ["1234567890"],
+        "hub.mode": ["subscribe"],
+        "hub.verify_token": ["YOUR_VERIFY_TOKEN"]
+    },
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+        "resourceId": "xxxxxx",
+        "resourcePath": "/webhook/whatsapp",
+        "httpMethod": "GET",
+        "extendedRequestId": "xxxxxxxxxxxx",
+        "requestTime": "16/Feb/2026:14:07:07 +0000",
+        "path": "/dev/webhook/whatsapp",
+        "accountId": "xxxxxxxxxxxx",
+        "protocol": "HTTP/1.1",
+        "stage": "dev",
+        "domainPrefix": "xxxxxxxxxx",
+        "requestTimeEpoch": 1771250827745,
+        "requestId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "sourceIp": "173.252.xxx.xxx",
+            "principalOrgId": null,
+            "accessKey": null,
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": "facebookplatform/1.0 (+http://developers.facebook.com)",
+            "user": null
+        },
+        "domainName": "xxxxxxxxxx.execute-api.us-east-1.amazonaws.com",
+        "deploymentId": "xxxxxx",
+        "apiId": "xxxxxxxxxx"
+    },
+    "body": null,
+    "isBase64Encoded": false
+}
