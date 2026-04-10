@@ -1,5 +1,6 @@
 import json
 import os
+import uuid
 import boto3
 import decimal
 
@@ -76,10 +77,11 @@ def get_service(service_id):
 
 def create_service(data):
     try:
-        required = ["service_id", "name"]
-        if not all(k in data for k in required):
-            return response(400, {"error": f"Required fields: {required}"})
+        if "name" not in data:
+            return response(400, {"error": "Required fields: ['name']"})
         
+        if "service_id" not in data:
+            data["service_id"] = str(uuid.uuid4())
         data["is_active"] = data.get("is_active", True)
         table.put_item(Item=data)
         return response(201, {"message": "Service created", "service_id": data["service_id"]})
