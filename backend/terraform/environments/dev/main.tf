@@ -16,7 +16,7 @@ module "whatsapp_agendente" {
   project_name = "barbearia-silva"
 
   # Deploy automático do frontend Angular para S3 a cada terraform apply
-  frontend_deploy_enabled = false #true
+  frontend_deploy_enabled = true
 
   # Certificado CA da Meta para mTLS nos webhooks do WhatsApp
   # Download: https://developers.facebook.com/docs/graph-api/webhooks/getting-started/#downloadable-root-certificate

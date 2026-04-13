@@ -4,7 +4,7 @@
 
 locals {
   frontend_url  = local.enable_custom_domain ? "https://${local.frontend_domain}" : "http://${aws_s3_bucket.frontend.bucket}.s3-website-${var.aws_region}.amazonaws.com"
-  webhook_url   = local.enable_custom_domain ? "https://${local.whatsapp_domain}/webhook" : "${aws_api_gateway_stage.whatsapp.invoke_url}/webhook"
+  webhook_url   = local.enable_custom_domain ? "https://${local.whatsapp_domain}" : aws_api_gateway_stage.whatsapp.invoke_url
   privacy_url   = "${local.frontend_url}/privacy-policy"
 
   output_site_section  = var.cognito_allow_public_redirect ? "\n  Site:             ${local.frontend_url}" : ""
