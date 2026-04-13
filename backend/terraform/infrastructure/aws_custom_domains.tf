@@ -9,10 +9,13 @@ data "aws_region" "current" {}
 locals {
   enable_custom_domain = var.custom_domain_name != null
   
-  # Subdomínios: dev.barbearia-silva.serverlessai.click
-  frontend_domain  = local.enable_custom_domain ? "${var.environment}.${var.project_name}.${var.custom_domain_name}" : null
-  api_domain       = local.enable_custom_domain ? "api.${var.environment}.${var.project_name}.${var.custom_domain_name}" : null
-  whatsapp_domain  = local.enable_custom_domain ? "whatsapp.${var.environment}.${var.project_name}.${var.custom_domain_name}" : null
+  # Prefixo de ambiente (ex: "dev." ou "" se ocultado)
+  env_prefix = var.include_environment_in_domain ? "${var.environment}." : ""
+
+  # Subdomínios: [env.]barbearia-silva.serverlessai.click
+  frontend_domain  = local.enable_custom_domain ? "${local.env_prefix}${var.project_name}.${var.custom_domain_name}" : null
+  api_domain       = local.enable_custom_domain ? "api.${local.env_prefix}${var.project_name}.${var.custom_domain_name}" : null
+  whatsapp_domain  = local.enable_custom_domain ? "whatsapp.${local.env_prefix}${var.project_name}.${var.custom_domain_name}" : null
 }
 
 # ============================================================================

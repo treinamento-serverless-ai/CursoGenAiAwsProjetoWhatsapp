@@ -25,6 +25,9 @@ module "whatsapp_agendente" {
   # Domínio customizado (opcional, definido no terraform.tfvars)
   custom_domain_name = var.custom_domain_name
 
+  # Ocultar nome do ambiente nas URLs (ex: project.domain em vez de dev.project.domain)
+  include_environment_in_domain = false
+
   # Instrução customizada do Bedrock Agent (sobrescreve a instrução padrão do módulo)
   bedrock_agent_instruction = file("${path.module}/bedrock_agent_instruction.txt")
 

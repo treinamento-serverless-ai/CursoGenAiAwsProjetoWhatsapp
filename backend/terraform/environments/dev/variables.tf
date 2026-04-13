@@ -9,6 +9,12 @@ variable "custom_domain_name" {
   default     = null
 }
 
+variable "include_environment_in_domain" {
+  type        = bool
+  description = "Include environment name as prefix in custom domain URLs"
+  default     = true
+}
+
 variable "cognito_admin_users" {
   type = list(object({
     name  = string

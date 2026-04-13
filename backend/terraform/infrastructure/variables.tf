@@ -32,6 +32,12 @@ variable "custom_domain_name" {
   default     = null
 }
 
+variable "include_environment_in_domain" {
+  type        = bool
+  description = "Include environment name as prefix in custom domain URLs (e.g., dev.project.domain vs project.domain)"
+  default     = true
+}
+
 variable "meta_ca_cert_path" {
   type        = string
   description = "Path to the Meta CA certificate .pem file. Required when custom_domain_name is set. Download from: https://developers.facebook.com/docs/graph-api/webhooks/getting-started/#downloadable-root-certificate"
