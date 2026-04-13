@@ -3,11 +3,8 @@
   "function": "get_service_details",
   "parameters": [
     {
-      "name": "service_id",
-      "value": "svc-001"
+      "name": "service_name",
+      "value": "Corte de cabelo simples"
     }
-  ],
-  "sessionAttributes": {
-    "userId": "5511999887766"
-  }
+  ]
 }

@@ -4,33 +4,13 @@ Lista agendamentos futuros do usuario baseado no telefone.
 
 ## Funcionalidade
 
-Busca todos os agendamentos futuros (nao cancelados) do usuario incluindo:
-- ID do agendamento
-- Data e horario
-- Profissional
-- Servico
-- Status
+- Busca agendamentos futuros (nao cancelados) do usuario via GSI `client_phone-appointment_date-index`
+- Retorna dados legiveis (sem IDs internos): data, profissional, servico, status
 
 ## Parametros
 
-Nenhum parametro necessario (usa userId da sessao).
+Nenhum parametro necessario. O `userId` vem via `sessionAttributes`.
 
 ## Variaveis de Ambiente
 
-- `DYNAMODB_APPOINTMENTS_TABLE`: Nome da tabela DynamoDB de agendamentos
-
-## Exemplo de Resposta
-
-```json
-{
-  "appointments": [
-    {
-      "appointment_id": "appt-001",
-      "date": "2026-02-20T10:00:00",
-      "professional": "João Silva",
-      "service": "Corte de Cabelo",
-      "status": "PENDING"
-    }
-  ]
-}
-```
+- `DYNAMODB_APPOINTMENTS_TABLE`: Tabela de agendamentos

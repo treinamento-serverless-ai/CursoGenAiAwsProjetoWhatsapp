@@ -189,13 +189,17 @@ def lambda_handler(event, context):
     user_id = event['user_id']
     request_id = context.aws_request_id
     
+    logger.info(f"[{request_id}] START processing for user {user_id}")
+    
     config = get_appconfig()
+    logger.info(f"[{request_id}] AppConfig loaded successfully")
     
     # 1. Buscar mensagens do buffer
     response = buffer_table.get_item(Key={'phone_number': user_id})
     item = response.get('Item')
     
     if not item or 'messages' not in item:
+        logger.info(f"[{request_id}] No messages in buffer for user {user_id}")
         return {'status': 'no_messages', 'user_id': user_id}
     
     messages = item['messages']
@@ -206,6 +210,8 @@ def lambda_handler(event, context):
     user_messages = [{'content': messages[str(ts)]['content'], 'id': messages[str(ts)]['id']} for ts in sorted_timestamps if messages[str(ts)].get('content')]
     message_content = "\n".join([msg['content'] for msg in user_messages])
     message_ids = [msg['id'] for msg in user_messages]
+    
+    logger.info(f"[{request_id}] Buffer: {len(user_messages)} messages, session_id={session_id}, content='{message_content[:200]}'")
     
     # Marcar mensagens como lidas
     mark_messages_as_read(message_ids)
@@ -222,25 +228,40 @@ def lambda_handler(event, context):
     
     # 2. Arquivar mensagens do usuário
     save_messages_to_history(user_id, user_messages, sender='user')
+    logger.info(f"[{request_id}] User messages saved to history")
     
     # 3. Tentar gerar resposta com Bedrock
     try:
+        logger.info(f"[{request_id}] Invoking Bedrock Agent: agentId={os.environ['BEDROCK_AGENT_ID']}, aliasId={os.environ['BEDROCK_AGENT_ALIAS_ID']}, sessionId={session_id}")
+        
         bedrock_response = bedrock_client.invoke_agent(
             agentId=os.environ['BEDROCK_AGENT_ID'],
             agentAliasId=os.environ['BEDROCK_AGENT_ALIAS_ID'],
             sessionId=session_id,
             inputText=message_content,
             sessionState={
+                'sessionAttributes': {
+                    'userId': user_id
+                },
                 'promptSessionAttributes': {
                     'userId': user_id
                 }
             }
         )
         
+        logger.info(f"[{request_id}] Bedrock invoke_agent returned, reading completion stream...")
+        
         agent_response = ""
+        chunk_count = 0
         for event in bedrock_response['completion']:
             if 'chunk' in event:
+                chunk_count += 1
                 agent_response += event['chunk']['bytes'].decode('utf-8')
+            if 'trace' in event:
+                trace = event['trace']
+                logger.info(f"[{request_id}] Bedrock trace: {json.dumps(trace, default=str)[:500]}")
+        
+        logger.info(f"[{request_id}] Bedrock response: {chunk_count} chunks, length={len(agent_response)}, response='{agent_response[:300]}'")
         
         if not agent_response:
             raise Exception("Empty response from Bedrock")

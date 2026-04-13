@@ -42,6 +42,15 @@
     font-size: 0.85rem;
     max-width: 90%;
   }
+
+  &.auto {
+    align-self: center;
+    background: #e8d5f5;
+    color: #4a235a;
+    font-size: 0.85rem;
+    max-width: 90%;
+    border-left: 3px solid #8e44ad;
+  }
 }
 
 .message-header {

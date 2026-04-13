@@ -3,116 +3,81 @@ import logging
 import os
 
 import boto3
+from difflib import SequenceMatcher
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 dynamodb = boto3.resource('dynamodb')
-PROFESSIONALS_TABLE = os.environ['DYNAMODB_PROFESSIONALS_TABLE']
-SERVICES_TABLE = os.environ['DYNAMODB_SERVICES_TABLE']
-professionals_table = dynamodb.Table(PROFESSIONALS_TABLE)
-services_table = dynamodb.Table(SERVICES_TABLE)
+professionals_table = dynamodb.Table(os.environ['DYNAMODB_PROFESSIONALS_TABLE'])
+services_table = dynamodb.Table(os.environ['DYNAMODB_SERVICES_TABLE'])
 
-def convert_params_to_dict(params_list):
-    """Convert Bedrock Agent parameter list to dictionary."""
-    return {param.get("name"): param.get("value") for param in params_list if param.get("name")}
+
+def fuzzy_find(search_term, items, key, threshold=0.6):
+    term = search_term.lower()
+    return [item for item in items if SequenceMatcher(None, term, item.get(key, '').lower()).ratio() >= threshold]
+
 
 def lambda_handler(event, context):
     action_group = event.get('actionGroup')
     function_name = event.get('function')
-    parameters = convert_params_to_dict(event.get('parameters', []))
-    
-    service_id = parameters.get('service_id')
-    
-    if not service_id:
-        return {
-            "messageVersion": "1.0",
-            "response": {
-                "actionGroup": action_group,
-                "function": function_name,
-                "functionResponse": {
-                    "responseBody": {"TEXT": {"body": "Error: service_id is required."}}
-                }
-            }
-        }
-    
+    params = {p.get("name"): p.get("value", "").replace('&quot;', '').strip('" ') for p in event.get('parameters', []) if p.get("name")}
+
+    service_name = params.get('service_name', '')
+    logger.info(f"[{context.aws_request_id}] GetServiceDetails called. service_name={service_name}")
+
+    if not service_name:
+        return _response(action_group, function_name, "Error: service_name is required.")
+
     try:
-        # Get service info
-        service_response = services_table.get_item(Key={'service_id': service_id})
-        if 'Item' not in service_response:
-            return {
-                "messageVersion": "1.0",
-                "response": {
-                    "actionGroup": action_group,
-                    "function": function_name,
-                    "functionResponse": {
-                        "responseBody": {"TEXT": {"body": "Service not found."}}
-                    }
-                }
-            }
-        
-        service = service_response['Item']
-        
-        # Get professionals offering this service
-        prof_response = professionals_table.scan(
-            FilterExpression='is_active = :val',
-            ExpressionAttributeValues={':val': True}
-        )
-        professionals = prof_response.get('Items', [])
-        
+        services = services_table.scan(FilterExpression='is_active = :val', ExpressionAttributeValues={':val': True}).get('Items', [])
+
+        # Fuzzy search by name, then by description
+        matches = fuzzy_find(service_name, services, 'name')
+        if not matches:
+            matches = fuzzy_find(service_name, services, 'description')
+        if not matches:
+            available = ", ".join(s.get('name', '') for s in services)
+            return _response(action_group, function_name,
+                             f"Service '{service_name}' not found. Available services: {available}")
+
+        service = matches[0]
+        service_id = service['service_id']
+
+        # Find professionals offering this service
+        profs = professionals_table.scan(FilterExpression='is_active = :val', ExpressionAttributeValues={':val': True}).get('Items', [])
         details = []
-        for prof in professionals:
-            prof_service = next((s for s in prof.get('services', []) if s['service_id'] == service_id), None)
-            if prof_service:
+        for prof in profs:
+            ps = next((s for s in prof.get('services', []) if s['service_id'] == service_id), None)
+            if ps:
                 details.append({
                     "professional_name": prof.get('name'),
-                    "professional_id": prof.get('professional_id'),
-                    "duration_hours": float(prof_service.get('duration_hours', 0)),
-                    "price": float(prof_service.get('price', 0))
+                    "duration_hours": float(ps.get('duration_hours', 0)),
+                    "price": float(ps.get('price', 0))
                 })
-        
+
         if not details:
-            return {
-                "messageVersion": "1.0",
-                "response": {
-                    "actionGroup": action_group,
-                    "function": function_name,
-                    "functionResponse": {
-                        "responseBody": {"TEXT": {"body": f"Service '{service.get('name')}' is not currently offered by any professional."}}
-                    }
-                }
-            }
-        
-        response_data = {
+            return _response(action_group, function_name,
+                             f"Service '{service.get('name')}' is not currently offered by any professional.")
+
+        data = {
             "service_name": service.get('name'),
             "description": service.get('description', ''),
             "category": service.get('category', 'General'),
             "professionals": details
         }
-        
-        response_text = f"Service details: {json.dumps(response_data, ensure_ascii=False)}"
-        
-        return {
-            "messageVersion": "1.0",
-            "response": {
-                "actionGroup": action_group,
-                "function": function_name,
-                "functionResponse": {
-                    "responseBody": {"TEXT": {"body": response_text}}
-                }
-            }
-        }
-    
+        return _response(action_group, function_name, f"Service details: {json.dumps(data, ensure_ascii=False)}")
+
     except Exception as e:
         logger.error(f"Error getting service details: {e}")
-        return {
-            "messageVersion": "1.0",
-            "response": {
-                "actionGroup": action_group,
-                "function": function_name,
-                "functionResponse": {
-                    "responseState": "FAILURE",
-                    "responseBody": {"TEXT": {"body": f"Error getting service details: {str(e)}"}}
-                }
-            }
-        }
+        return _response(action_group, function_name, f"Error: {str(e)}", failure=True)
+
+
+def _response(action_group, function_name, body, failure=False):
+    r = {"responseBody": {"TEXT": {"body": body}}}
+    if failure:
+        r["responseState"] = "FAILURE"
+    return {
+        "messageVersion": "1.0",
+        "response": {"actionGroup": action_group, "function": function_name, "functionResponse": r}
+    }

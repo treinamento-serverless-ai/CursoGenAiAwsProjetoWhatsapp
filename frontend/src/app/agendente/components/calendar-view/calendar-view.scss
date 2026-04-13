@@ -118,10 +118,10 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    &.confirmed { background: #4caf50; }
-    &.pending { background: #ff9800; }
+    &.scheduled { background: #2196f3; }
+    &.completed { background: #4caf50; }
     &.cancelled { background: #f44336; }
-    &.completed { background: #9e9e9e; }
+    &.no_show { background: #ff9800; }
   }
 }
 

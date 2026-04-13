@@ -1,5 +1,6 @@
 import json
 import os
+import uuid
 import boto3
 import decimal
 from datetime import datetime
@@ -92,9 +93,12 @@ def get_appointment(appointment_id):
 
 def create_appointment(data):
     try:
-        required = ["appointment_id", "appointment_date", "client_phone", "professional_id", "service_id"]
+        required = ["appointment_date", "client_phone", "professional_id", "service_id"]
         if not all(k in data for k in required):
             return response(400, {"error": f"Required fields: {required}"})
+        
+        if "appointment_id" not in data:
+            data["appointment_id"] = str(uuid.uuid4())
         
         data["created_at"] = datetime.utcnow().isoformat() + "Z"
         data["status"] = data.get("status", "scheduled")

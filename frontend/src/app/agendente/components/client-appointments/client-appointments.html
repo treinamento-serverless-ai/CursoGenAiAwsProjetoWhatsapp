@@ -52,7 +52,7 @@
             <div class="appt-details">{{ appt.service_name }} — {{ appt.professional_name }}</div>
             <span class="appt-status" [class]="getStatusClass(appt.status)">{{ getStatusLabel(appt.status) }}</span>
           </div>
-          @if (appt.status !== 'CANCELLED') {
+          @if (appt.status !== 'cancelled') {
             <button class="btn-cancel" (click)="cancelAppointment(appt)" title="Cancelar">
               <mat-icon>cancel</mat-icon>
             </button>

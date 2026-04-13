@@ -98,7 +98,7 @@ def create_professional(data):
         
         data = convert_floats(data)
         
-        professional_id = f"prof-{uuid.uuid4().hex[:12]}"
+        professional_id = str(uuid.uuid4())
         data["professional_id"] = professional_id
         data["is_active"] = data.get("is_active", True)
         data["created_at"] = datetime.utcnow().isoformat() + "Z"

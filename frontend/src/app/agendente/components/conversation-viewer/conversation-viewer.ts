@@ -71,10 +71,11 @@ export class ConversationViewer implements OnInit, OnChanges {
 
   getSenderLabel(sender: string): string {
     const labels: Record<string, string> = {
-      user: '👤 Cliente',
-      ai: '🤖 IA',
-      human: '👨‍💼 Atendente',
-      system: '⚙️ Sistema',
+      user: '\u{1F464} Cliente',
+      ai: '\u{1F916} IA',
+      human: '\u{1F468}\u200D\u{1F4BC} Atendente',
+      system: '\u2699\uFE0F Sistema',
+      auto: '\u{1F4E9} Resposta Autom\u00E1tica',
     };
     return labels[sender] || sender;
   }

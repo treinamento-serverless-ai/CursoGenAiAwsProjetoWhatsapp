@@ -6,7 +6,7 @@
   }
 
   <div class="calendar-header">
-    <h1>Calendario de Agendamentos</h1>
+    <h1>Calendário de Agendamentos</h1>
     <div class="filters">
       <select [(ngModel)]="selectedProfessional" (change)="loadAppointments()">
         <option value="">Todos os profissionais</option>
@@ -55,9 +55,9 @@
   }
 
   <div class="legend">
-    <span><span class="dot confirmed"></span> Confirmado</span>
-    <span><span class="dot pending"></span> Pendente</span>
-    <span><span class="dot cancelled"></span> Cancelado</span>
+    <span><span class="dot scheduled"></span> Agendado</span>
     <span><span class="dot completed"></span> Concluído</span>
+    <span><span class="dot cancelled"></span> Cancelado</span>
+    <span><span class="dot no_show"></span> Não compareceu</span>
   </div>
 </div>

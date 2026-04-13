@@ -68,19 +68,19 @@ export class ClientAppointments {
 
   get futureAppointments(): Appointment[] {
     const now = new Date().toISOString();
-    return this.appointments.filter(a => a.appointment_date >= now && a.status !== 'CANCELLED');
+    return this.appointments.filter(a => a.appointment_date >= now && a.status !== 'cancelled');
   }
 
   get pastAppointments(): Appointment[] {
     const now = new Date().toISOString();
-    return this.appointments.filter(a => a.appointment_date < now || a.status === 'CANCELLED');
+    return this.appointments.filter(a => a.appointment_date < now || a.status === 'cancelled');
   }
 
   cancelAppointment(appt: Appointment): void {
     if (!confirm(`Cancelar agendamento de ${appt.service_name}?`)) return;
     this.appointmentsService.cancelAppointment(appt.appointment_id).subscribe({
       next: () => {
-        appt.status = 'CANCELLED';
+        appt.status = 'cancelled';
         this.cdr.markForCheck();
       },
     });
@@ -112,7 +112,7 @@ export class ClientAppointments {
       professional_name: prof?.name || '',
       service_id: this.formService,
       service_name: svc?.name || '',
-      status: 'CONFIRMED',
+      status: 'scheduled',
     };
 
     this.saving = true;
@@ -131,7 +131,7 @@ export class ClientAppointments {
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      CONFIRMED: 'Confirmado', PENDING: 'Pendente', CANCELLED: 'Cancelado', COMPLETED: 'Concluído',
+      scheduled: 'Agendado', completed: 'Concluído', cancelled: 'Cancelado', no_show: 'Não compareceu',
     };
     return labels[status] || status;
   }

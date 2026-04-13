@@ -5,20 +5,23 @@
     {
       "name": "appointment_date",
       "type": "string",
-      "value": "2026-02-19T16:00:00"
+      "value": "2026-04-21T16:00:00"
     },
     {
-      "name": "professional_id",
+      "name": "professional_name",
       "type": "string",
-      "value": "prof-002"
+      "value": "Maria Silva"
     },
     {
-      "name": "service_id",
+      "name": "service_name",
       "type": "string",
-      "value": "svc-001"
+      "value": "Corte de cabelo simples"
     }
   ],
   "sessionAttributes": {
+    "userId": "5511988776655"
+  },
+  "promptSessionAttributes": {
     "userId": "5511988776655"
   }
 }

@@ -1,8 +1,5 @@
 {
   "actionGroup": "ListServices",
   "function": "list_services",
-  "parameters": [],
-  "sessionAttributes": {
-    "userId": "5511999887766"
-  }
+  "parameters": []
 }

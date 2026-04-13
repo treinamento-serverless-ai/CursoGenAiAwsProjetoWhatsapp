@@ -92,9 +92,10 @@ export class AppointmentsList implements OnInit {
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      PENDING: 'Pendente',
-      CONFIRMED: 'Confirmado',
-      CANCELLED: 'Cancelado',
+      scheduled: 'Agendado',
+      completed: 'Concluído',
+      cancelled: 'Cancelado',
+      no_show: 'Não compareceu',
     };
     return labels[status] || status;
   }

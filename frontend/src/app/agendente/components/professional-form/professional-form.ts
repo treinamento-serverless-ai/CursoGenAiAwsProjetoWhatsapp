@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProfessionalsService } from '../../services/professionals';
 import { ServicesService } from '../../services/services';
 import { Professional, ProfessionalService, Service } from '../../models';
@@ -10,7 +11,7 @@ import { Professional, ProfessionalService, Service } from '../../models';
 @Component({
   selector: 'app-professional-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, MatProgressSpinnerModule],
+  imports: [CommonModule, FormsModule, RouterLink, MatProgressSpinnerModule, MatTooltipModule],
   templateUrl: './professional-form.html',
   styleUrl: './professional-form.scss',
 })
@@ -44,11 +45,11 @@ export class ProfessionalForm implements OnInit {
 
   weekDays = [
     { key: 'monday', label: 'Segunda' },
-    { key: 'tuesday', label: 'Terca' },
+    { key: 'tuesday', label: 'Terça' },
     { key: 'wednesday', label: 'Quarta' },
     { key: 'thursday', label: 'Quinta' },
     { key: 'friday', label: 'Sexta' },
-    { key: 'saturday', label: 'Sabado' },
+    { key: 'saturday', label: 'Sábado' },
     { key: 'sunday', label: 'Domingo' },
   ];
 

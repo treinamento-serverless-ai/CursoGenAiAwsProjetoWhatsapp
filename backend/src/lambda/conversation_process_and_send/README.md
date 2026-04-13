@@ -6,13 +6,19 @@ Lambda consolidada que processa mensagens do buffer, invoca o Bedrock Agent e en
 
 - Busca mensagens pendentes na tabela MessageBuffer
 - Salva mensagens do usuario no historico de conversas
-- Invoca o Bedrock Agent com o texto consolidado
+- Invoca o Bedrock Agent com o texto consolidado, passando `userId` via `sessionAttributes` e `promptSessionAttributes`
 - Envia resposta da IA para o usuario via Meta WhatsApp API
 - Salva resposta da IA no historico de conversas
 - Limpa mensagens processadas do buffer
-- Em caso de falha do Bedrock ou da Meta API: desabilita IA para o cliente e envia alerta via SNS
+- Em caso de falha: envia mensagem de erro configuravel (AppConfig) e alerta via SNS
 
-Substitui as Lambdas `conversation_invoke_agent` e `conversation_send_message`.
+## Session Attributes
+
+O `userId` (telefone do cliente) e passado ao Bedrock Agent via:
+- `sessionAttributes`: persistido pelo runtime do Agent, propagado automaticamente para todos os Action Groups
+- `promptSessionAttributes`: injetado no prompt do modelo (redundancia)
+
+Isso garante que todas as lambdas dos Action Groups recebam o `userId` mesmo em chamadas multiplas na mesma turn.
 
 ## Variaveis de Ambiente
 

@@ -71,3 +71,7 @@ button {
   align-items: center;
   z-index: 1000;
 }
+
+.multiline-tooltip {
+  white-space: pre-line;
+}

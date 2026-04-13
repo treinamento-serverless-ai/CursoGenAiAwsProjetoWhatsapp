@@ -1,152 +1,92 @@
 import json
 import logging
+import os
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
+
+import boto3
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 TIMEZONE = ZoneInfo("America/Sao_Paulo")
+BEDROCK_MODEL_ID = os.environ.get('BEDROCK_MODEL_ID', 'amazon.nova-lite-v1:0')
 
-def get_week_range(base_date, offset=0):
-    """Retorna segunda e domingo da semana (offset: 0=atual, 1=próxima)"""
-    days_since_monday = base_date.weekday()
-    monday = base_date - timedelta(days=days_since_monday) + timedelta(weeks=offset)
-    sunday = monday + timedelta(days=6)
-    return monday.date(), sunday.date()
+bedrock_runtime = boto3.client('bedrock-runtime')
 
-def get_month_range(base_date, offset=0):
-    """Retorna primeiro e último dia do mês (offset: 0=atual, 1=próximo)"""
-    month = base_date.month + offset
-    year = base_date.year
-    while month > 12:
-        month -= 12
-        year += 1
-    first_day = datetime(year, month, 1, tzinfo=TIMEZONE).date()
-    if month == 12:
-        last_day = datetime(year, 12, 31, tzinfo=TIMEZONE).date()
-    else:
-        last_day = (datetime(year, month + 1, 1, tzinfo=TIMEZONE) - timedelta(days=1)).date()
-    return first_day, last_day
 
-def resolve_reference(reference, now):
-    """Resolve referência temporal"""
-    ref_upper = reference.upper().strip()
-    
-    if ref_upper == "TODAY":
-        date = now.date()
-        return {"type": "single", "date": str(date), "day_of_week": date.strftime("%A")}
-    
-    if ref_upper == "TOMORROW":
-        date = (now + timedelta(days=1)).date()
-        return {"type": "single", "date": str(date), "day_of_week": date.strftime("%A")}
-    
-    if "day" in ref_upper:
-        parts = ref_upper.replace("days", "").replace("day", "").strip().split()
-        if len(parts) == 1:
-            offset = int(parts[0])
-            date = (now + timedelta(days=offset)).date()
-            return {"type": "single", "date": str(date), "day_of_week": date.strftime("%A")}
-    
-    if ref_upper == "CURRENT_WEEK":
-        start, end = get_week_range(now, 0)
-        return {"type": "range", "start_date": str(start), "end_date": str(end)}
-    
-    if ref_upper == "NEXT_WEEK":
-        start, end = get_week_range(now, 1)
-        return {"type": "range", "start_date": str(start), "end_date": str(end)}
-    
-    if "week" in ref_upper:
-        parts = ref_upper.replace("weeks", "").replace("week", "").strip().split()
-        if len(parts) == 1:
-            offset = int(parts[0])
-            start, end = get_week_range(now, offset)
-            return {"type": "range", "start_date": str(start), "end_date": str(end)}
-    
-    if ref_upper == "CURRENT_MONTH":
-        start, end = get_month_range(now, 0)
-        return {"type": "range", "start_date": str(start), "end_date": str(end)}
-    
-    if ref_upper == "NEXT_MONTH":
-        start, end = get_month_range(now, 1)
-        return {"type": "range", "start_date": str(start), "end_date": str(end)}
-    
-    raise ValueError(f"Referência '{reference}' não suportada")
+def resolve_with_bedrock(reference, now):
+    """Usa Bedrock para interpretar qualquer referência temporal em linguagem natural."""
+    today_str = now.strftime("%Y-%m-%d")
+    weekday = now.strftime("%A")
+
+    prompt = (
+        f"Today is {weekday}, {today_str}. "
+        f"The user said: \"{reference}\". "
+        f"Return ONLY a JSON object with the resolved date(s). "
+        f"If it's a single date: {{\"type\":\"single\",\"date\":\"YYYY-MM-DD\"}} "
+        f"If it's a range: {{\"type\":\"range\",\"start_date\":\"YYYY-MM-DD\",\"end_date\":\"YYYY-MM-DD\"}} "
+        f"Return ONLY the JSON, no explanation."
+    )
+
+    response = bedrock_runtime.converse(
+        modelId=BEDROCK_MODEL_ID,
+        messages=[{"role": "user", "content": [{"text": prompt}]}],
+        inferenceConfig={"maxTokens": 100, "temperature": 0}
+    )
+
+    text = response['output']['message']['content'][0]['text'].strip()
+    # Extrair JSON da resposta (pode vir com markdown)
+    if '```' in text:
+        text = text.split('```')[1].replace('json', '').strip()
+    return json.loads(text)
+
+
+def sanitize_param(value):
+    if not isinstance(value, str):
+        return value
+    return value.replace('&quot;', '').replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>').strip('" ')
+
 
 def convert_params_to_dict(params_list):
-    """Convert Bedrock Agent parameter list to dictionary."""
-    return {param.get("name"): param.get("value") for param in params_list if param.get("name")}
+    return {param.get("name"): sanitize_param(param.get("value")) for param in params_list if param.get("name")}
+
 
 def lambda_handler(event, context):
     action_group = event.get('actionGroup')
     function_name = event.get('function')
     parameters = convert_params_to_dict(event.get('parameters', []))
-    
+
     reference = parameters.get('reference')
-    
+    logger.info(f"[{context.aws_request_id}] ResolveDateReference called. reference={reference}")
+
     if not reference:
-        return {
-            "messageVersion": "1.0",
-            "response": {
-                "actionGroup": action_group,
-                "function": function_name,
-                "functionResponse": {
-                    "responseBody": {"TEXT": {"body": "Error: reference parameter is required."}}
-                }
-            }
-        }
-    
+        return _response(action_group, function_name, "Error: reference parameter is required.")
+
     try:
         now = datetime.now(TIMEZONE)
-        result = resolve_reference(reference, now)
-        
-        if result["type"] == "single":
-            result["start_date"] = None
-            result["end_date"] = None
+        result = resolve_with_bedrock(reference, now)
+
+        if result.get("type") == "single":
             date_obj = datetime.strptime(result["date"], "%Y-%m-%d")
-            result["formatted_date"] = date_obj.strftime("%d/%m/%Y")
-        else:
-            result["date"] = None
-            result["day_of_week"] = None
-            start_obj = datetime.strptime(result["start_date"], "%Y-%m-%d")
-            end_obj = datetime.strptime(result["end_date"], "%Y-%m-%d")
-            result["formatted_range"] = f"{start_obj.strftime('%d/%m/%Y')} a {end_obj.strftime('%d/%m/%Y')}"
-        
+            result["day_of_week"] = date_obj.strftime("%A")
+
         result["reference"] = reference
-        response_text = json.dumps(result, ensure_ascii=False)
-        
-        return {
-            "messageVersion": "1.0",
-            "response": {
-                "actionGroup": action_group,
-                "function": function_name,
-                "functionResponse": {
-                    "responseBody": {"TEXT": {"body": response_text}}
-                }
-            }
-        }
-        
-    except ValueError as e:
-        error_msg = f"{str(e)}. Supported: TODAY, TOMORROW, +N days, CURRENT_WEEK, NEXT_WEEK, +N weeks, CURRENT_MONTH, NEXT_MONTH"
-        return {
-            "messageVersion": "1.0",
-            "response": {
-                "actionGroup": action_group,
-                "function": function_name,
-                "functionResponse": {
-                    "responseBody": {"TEXT": {"body": error_msg}}
-                }
-            }
-        }
+        return _response(action_group, function_name, json.dumps(result, ensure_ascii=False))
+
     except Exception as e:
         logger.error(f"Error resolving date reference: {e}")
-        return {
-            "messageVersion": "1.0",
-            "response": {
-                "actionGroup": action_group,
-                "function": function_name,
-                "functionResponse": {
-                    "responseBody": {"TEXT": {"body": f"Internal error: {str(e)}"}}
-                }
+        return _response(action_group, function_name, f"Error resolving '{reference}': {str(e)}")
+
+
+def _response(action_group, function_name, body):
+    return {
+        "messageVersion": "1.0",
+        "response": {
+            "actionGroup": action_group,
+            "function": function_name,
+            "functionResponse": {
+                "responseBody": {"TEXT": {"body": body}}
             }
         }
+    }

@@ -5,20 +5,23 @@
     {
       "name": "appointment_date",
       "type": "string",
-      "value": "2026-02-20T11:00:00"
+      "value": "2026-04-22T11:00:00"
     },
     {
-      "name": "professional_id",
+      "name": "professional_name",
       "type": "string",
-      "value": "prof-001"
+      "value": "Carlos Souza"
     },
     {
-      "name": "service_id",
+      "name": "service_name",
       "type": "string",
-      "value": "svc-003"
+      "value": "Corte de barba"
     }
   ],
   "sessionAttributes": {
+    "userId": "5511999887766"
+  },
+  "promptSessionAttributes": {
     "userId": "5511999887766"
   }
 }

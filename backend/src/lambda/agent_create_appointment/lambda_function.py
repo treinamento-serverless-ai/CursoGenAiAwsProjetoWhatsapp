@@ -3,8 +3,12 @@ import logging
 import os
 import uuid
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 import boto3
+from difflib import SequenceMatcher
+
+TIMEZONE = ZoneInfo("America/Sao_Paulo")
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -12,122 +16,98 @@ logger.setLevel(logging.INFO)
 dynamodb = boto3.resource('dynamodb')
 appconfig = boto3.client('appconfig')
 
-APPOINTMENTS_TABLE = os.environ['DYNAMODB_APPOINTMENTS_TABLE']
-PROFESSIONALS_TABLE = os.environ['DYNAMODB_PROFESSIONALS_TABLE']
-CLIENTS_TABLE = os.environ['DYNAMODB_CLIENTS_TABLE']
+appointments_table = dynamodb.Table(os.environ['DYNAMODB_APPOINTMENTS_TABLE'])
+professionals_table = dynamodb.Table(os.environ['DYNAMODB_PROFESSIONALS_TABLE'])
+services_table = dynamodb.Table(os.environ['DYNAMODB_SERVICES_TABLE'])
+clients_table = dynamodb.Table(os.environ['DYNAMODB_CLIENTS_TABLE'])
+
 APPCONFIG_APP = os.environ['APPCONFIG_APPLICATION']
 APPCONFIG_ENV = os.environ['APPCONFIG_ENVIRONMENT']
 APPCONFIG_CONFIG = os.environ['APPCONFIG_CONFIGURATION']
 
-appointments_table = dynamodb.Table(APPOINTMENTS_TABLE)
-professionals_table = dynamodb.Table(PROFESSIONALS_TABLE)
-clients_table = dynamodb.Table(CLIENTS_TABLE)
 
-def convert_params_to_dict(params_list):
-    """Convert Bedrock Agent parameter list to dictionary."""
-    return {param.get("name"): param.get("value") for param in params_list if param.get("name")}
+def fuzzy_find(search_term, items, key, threshold=0.6):
+    term = search_term.lower()
+    return [item for item in items if SequenceMatcher(None, term, item.get(key, '').lower()).ratio() >= threshold]
+
+
+def sanitize_param(value):
+    if not isinstance(value, str):
+        return value
+    return value.replace('&quot;', '').replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>').strip('" ')
+
 
 def get_appconfig():
-    """Retrieve configuration from AWS AppConfig."""
     try:
         response = appconfig.get_configuration(
-            Application=APPCONFIG_APP,
-            Environment=APPCONFIG_ENV,
-            Configuration=APPCONFIG_CONFIG,
-            ClientId='lambda-create-appointment'
+            Application=APPCONFIG_APP, Environment=APPCONFIG_ENV,
+            Configuration=APPCONFIG_CONFIG, ClientId='lambda-create-appointment'
         )
-        config_content = response['Content'].read().decode('utf-8')
-        return json.loads(config_content)
+        return json.loads(response['Content'].read().decode('utf-8'))
     except Exception as e:
         logger.error(f"CRITICAL: Failed to get AppConfig: {e}")
         return {"max_booking_days": 90}
 
+
 def lambda_handler(event, context):
     action_group = event.get('actionGroup')
     function_name = event.get('function')
-    parameters = convert_params_to_dict(event.get('parameters', []))
-    
-    # userId pode vir em sessionAttributes (teste) ou promptSessionAttributes (Bedrock Agent)
+    params = {p.get("name"): sanitize_param(p.get("value")) for p in event.get('parameters', []) if p.get("name")}
+
     user_id = event.get('sessionAttributes', {}).get('userId') or event.get('promptSessionAttributes', {}).get('userId')
+    logger.info(f"[{context.aws_request_id}] CreateAppointment called. user_id={user_id}, params={params}")
 
     if not user_id:
-        return {
-            "messageVersion": "1.0",
-            "response": {
-                "actionGroup": action_group,
-                "function": function_name,
-                "functionResponse": {
-                    "responseState": "FAILURE",
-                    "responseBody": {"TEXT": {"body": "Error: User ID not found."}}
-                }
-            }
-        }
+        return _response(action_group, function_name, "Error: User ID not found.", failure=True)
 
     try:
         config = get_appconfig()
         max_booking_days = int(config.get('max_booking_days', 90))
-        
-        appointment_date_str = parameters.get('appointment_date')
-        professional_id = parameters.get('professional_id')
-        service_id = parameters.get('service_id')
 
-        if not all([appointment_date_str, professional_id, service_id]):
-            return {
-                "messageVersion": "1.0",
-                "response": {
-                    "actionGroup": action_group,
-                    "function": function_name,
-                    "functionResponse": {
-                        "responseBody": {"TEXT": {"body": "Error: appointment_date, professional_id, and service_id are required."}}
-                    }
-                }
-            }
+        appointment_date_str = params.get('appointment_date')
+        professional_name = params.get('professional_name')
+        service_name = params.get('service_name')
+
+        if not all([appointment_date_str, professional_name, service_name]):
+            return _response(action_group, function_name,
+                             "Error: appointment_date, professional_name, and service_name are required.")
 
         appointment_date = datetime.fromisoformat(appointment_date_str)
-        today = datetime.now()
-        max_date = today + timedelta(days=max_booking_days)
+        today = datetime.now(TIMEZONE)
 
-        if appointment_date.date() > max_date.date():
-            return {
-                "messageVersion": "1.0",
-                "response": {
-                    "actionGroup": action_group,
-                    "function": function_name,
-                    "functionResponse": {
-                        "responseBody": {"TEXT": {"body": f"Cannot book beyond {max_booking_days} days. Maximum date: {max_date.date().isoformat()}"}}
-                    }
-                }
-            }
+        if appointment_date.date() < today.date():
+            return _response(action_group, function_name,
+                             f"Error: date {appointment_date_str} is in the past. Today is {today.date()}. Please choose a future date.")
+        if appointment_date.date() > (today + timedelta(days=max_booking_days)).date():
+            return _response(action_group, function_name,
+                             f"Cannot book beyond {max_booking_days} days.")
 
-        # Get professional info
-        prof_response = professionals_table.get_item(Key={'professional_id': professional_id})
-        if 'Item' not in prof_response:
-            return {
-                "messageVersion": "1.0",
-                "response": {
-                    "actionGroup": action_group,
-                    "function": function_name,
-                    "functionResponse": {
-                        "responseBody": {"TEXT": {"body": "Professional not found."}}
-                    }
-                }
-            }
-        
-        professional = prof_response['Item']
-        
-        # Find service
-        service = next((s for s in professional.get('services', []) if s['service_id'] == service_id), None)
-        if not service:
-            return {
-                "messageVersion": "1.0",
-                "response": {
-                    "actionGroup": action_group,
-                    "function": function_name,
-                    "functionResponse": {
-                        "responseBody": {"TEXT": {"body": "Service not available for this professional."}}
-                    }
-                }
-            }
+        # Fuzzy resolve professional
+        all_profs = professionals_table.scan(FilterExpression='is_active = :val', ExpressionAttributeValues={':val': True}).get('Items', [])
+        prof_matches = fuzzy_find(professional_name, all_profs, 'name')
+        if not prof_matches:
+            available = ", ".join(p.get('name', '') for p in all_profs)
+            return _response(action_group, function_name,
+                             f"Professional '{professional_name}' not found. Available: {available}")
+        professional = prof_matches[0]
+
+        # Fuzzy resolve service
+        all_services = services_table.scan(FilterExpression='is_active = :val', ExpressionAttributeValues={':val': True}).get('Items', [])
+        svc_matches = fuzzy_find(service_name, all_services, 'name')
+        if not svc_matches:
+            svc_matches = fuzzy_find(service_name, all_services, 'description')
+        if not svc_matches:
+            available = ", ".join(s.get('name', '') for s in all_services)
+            return _response(action_group, function_name,
+                             f"Service '{service_name}' not found. Available: {available}")
+        service = svc_matches[0]
+        service_id = service['service_id']
+
+        # Verify professional offers this service
+        prof_service = next((s for s in professional.get('services', []) if s['service_id'] == service_id), None)
+        if not prof_service:
+            return _response(action_group, function_name,
+                             f"Service '{service.get('name')}' is not available with {professional.get('name')}.")
 
         # Get client info
         client_response = clients_table.get_item(Key={'phone_number': user_id})
@@ -136,46 +116,34 @@ def lambda_handler(event, context):
         # Create appointment
         appointment_id = str(uuid.uuid4())
         now = datetime.now().isoformat()
-        
-        appointment = {
+
+        appointments_table.put_item(Item={
             "appointment_id": appointment_id,
             "appointment_date": appointment_date.isoformat(),
             "client_name": client_name,
             "client_phone": user_id,
             "service_id": service_id,
-            "service_name": service['service_name'],
-            "professional_id": professional_id,
+            "service_name": service['name'],
+            "professional_id": professional['professional_id'],
             "professional_name": professional['name'],
-            "status": "PENDING",
+            "status": "scheduled",
             "created_at": now,
             "updated_at": now
-        }
-        
-        appointments_table.put_item(Item=appointment)
-        
-        response_text = f"Appointment created successfully! ID: {appointment_id}. {client_name} with {professional['name']} for {service['service_name']} on {appointment_date.strftime('%Y-%m-%d %H:%M')}. Status: PENDING"
+        })
 
-        return {
-            "messageVersion": "1.0",
-            "response": {
-                "actionGroup": action_group,
-                "function": function_name,
-                "functionResponse": {
-                    "responseBody": {"TEXT": {"body": response_text}}
-                }
-            }
-        }
+        return _response(action_group, function_name,
+                         f"Appointment created successfully! {client_name} with {professional['name']} for {service['name']} on {appointment_date.strftime('%Y-%m-%d %H:%M')}. Status: scheduled")
 
     except Exception as e:
         logger.error(f"Error: {e}")
-        return {
-            "messageVersion": "1.0",
-            "response": {
-                "actionGroup": action_group,
-                "function": function_name,
-                "functionResponse": {
-                    "responseState": "FAILURE",
-                    "responseBody": {"TEXT": {"body": f"Error creating appointment: {str(e)}"}}
-                }
-            }
-        }
+        return _response(action_group, function_name, f"Error creating appointment: {str(e)}", failure=True)
+
+
+def _response(action_group, function_name, body, failure=False):
+    r = {"responseBody": {"TEXT": {"body": body}}}
+    if failure:
+        r["responseState"] = "FAILURE"
+    return {
+        "messageVersion": "1.0",
+        "response": {"actionGroup": action_group, "function": function_name, "functionResponse": r}
+    }

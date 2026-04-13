@@ -78,6 +78,7 @@ Armazena o histórico completo de mensagens trocadas entre clientes e o sistema.
 - `ai`: resposta gerada pelo Bedrock Agent
 - `human`: resposta de atendente humano
 - `system`: mensagem do sistema (erros, notificações)
+- `auto`: resposta automática do sistema (fora do horário, usuário banido, IA desabilitada, transcrição desabilitada)
 
 **Exemplo**:
 ```json
@@ -267,3 +268,124 @@ Todas as tabelas usam modo **PAY_PER_REQUEST** (on-demand), sem necessidade de p
 
 ### Consistência
 Todas as operações de leitura usam consistência eventual por padrão. Para operações críticas (agendamentos), considere usar `ConsistentRead=True`.
+
+---
+
+## Dados de Exemplo para Testes
+
+### Services (4 registros)
+
+```json
+{
+  "service_id": "a1b2c3d4-1111-4000-a000-000000000001",
+  "name": "Corte de cabelo simples",
+  "description": "Corte tradicional com máquina e tesoura para cabelos lisos ou ondulados. Serviço rápido e prático, ideal para o dia a dia.",
+  "category": "Cabelo",
+  "is_active": true
+}
+```
+
+```json
+{
+  "service_id": "a1b2c3d4-2222-4000-a000-000000000002",
+  "name": "Corte de cabelo cacheado",
+  "description": "Corte especializado para cabelos cacheados e crespos, respeitando a curvatura natural dos fios. Inclui finalização com produtos específicos para cachos.",
+  "category": "Cabelo",
+  "is_active": true
+}
+```
+
+```json
+{
+  "service_id": "a1b2c3d4-3333-4000-a000-000000000003",
+  "name": "Corte de barba",
+  "description": "Aparar e modelar a barba com navalha e máquina, inclui alinhamento e hidratação. Ideal para quem quer manter a barba bem cuidada e com formato definido.",
+  "category": "Barba",
+  "is_active": true
+}
+```
+
+```json
+{
+  "service_id": "a1b2c3d4-4444-4000-a000-000000000004",
+  "name": "Combo cabelo e barba",
+  "description": "Pacote combinado de corte de cabelo simples e corte de barba com preço especial. Inclui corte tradicional com máquina e tesoura mais alinhamento e modelagem da barba.",
+  "category": "Combo",
+  "is_active": true
+}
+```
+
+### Professionals (3 registros)
+
+Cada profissional referencia os `service_id` dos serviços acima na sua lista de `services`.
+
+```json
+{
+  "professional_id": "b2c3d4e5-1111-4000-b000-000000000001",
+  "name": "João Oliveira",
+  "specialty": "Cabelos cacheados",
+  "career_start_date": "2018-03-15",
+  "social_media_link": "",
+  "is_active": true,
+  "working_days": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+  "working_hours": { "start": "09:00", "end": "18:00" },
+  "scheduling_policy": {
+    "type": "FLEXIBLE_MINUTES",
+    "allowed_start_minutes": [0, 30],
+    "slot_window_hours": 1
+  },
+  "services": [
+    { "service_id": "a1b2c3d4-1111-4000-a000-000000000001", "service_name": "Corte de cabelo simples", "duration_hours": 0.5, "price": 50 },
+    { "service_id": "a1b2c3d4-2222-4000-a000-000000000002", "service_name": "Corte de cabelo cacheado", "duration_hours": 1, "price": 80 },
+    { "service_id": "a1b2c3d4-3333-4000-a000-000000000003", "service_name": "Corte de barba", "duration_hours": 0.5, "price": 40 },
+    { "service_id": "a1b2c3d4-4444-4000-a000-000000000004", "service_name": "Combo cabelo e barba", "duration_hours": 1, "price": 75 }
+  ]
+}
+```
+
+```json
+{
+  "professional_id": "b2c3d4e5-2222-4000-b000-000000000002",
+  "name": "Maria Silva",
+  "specialty": "Cortes sociais e modernos",
+  "career_start_date": "2020-06-01",
+  "social_media_link": "",
+  "is_active": true,
+  "working_days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"],
+  "working_hours": { "start": "08:00", "end": "17:00" },
+  "scheduling_policy": {
+    "type": "FLEXIBLE_MINUTES",
+    "allowed_start_minutes": [0, 30],
+    "slot_window_hours": 1
+  },
+  "services": [
+    { "service_id": "a1b2c3d4-1111-4000-a000-000000000001", "service_name": "Corte de cabelo simples", "duration_hours": 0.5, "price": 45 },
+    { "service_id": "a1b2c3d4-2222-4000-a000-000000000002", "service_name": "Corte de cabelo cacheado", "duration_hours": 1, "price": 75 },
+    { "service_id": "a1b2c3d4-3333-4000-a000-000000000003", "service_name": "Corte de barba", "duration_hours": 0.5, "price": 35 },
+    { "service_id": "a1b2c3d4-4444-4000-a000-000000000004", "service_name": "Combo cabelo e barba", "duration_hours": 1, "price": 65 }
+  ]
+}
+```
+
+```json
+{
+  "professional_id": "b2c3d4e5-3333-4000-b000-000000000003",
+  "name": "Carlos Souza",
+  "specialty": "Barba e acabamento",
+  "career_start_date": "2022-01-10",
+  "social_media_link": "",
+  "is_active": true,
+  "working_days": ["tuesday", "wednesday", "thursday", "friday", "saturday"],
+  "working_hours": { "start": "10:00", "end": "19:00" },
+  "scheduling_policy": {
+    "type": "FIXED_SLOTS",
+    "allowed_start_minutes": [0],
+    "slot_window_hours": 1
+  },
+  "services": [
+    { "service_id": "a1b2c3d4-1111-4000-a000-000000000001", "service_name": "Corte de cabelo simples", "duration_hours": 0.5, "price": 50 },
+    { "service_id": "a1b2c3d4-3333-4000-a000-000000000003", "service_name": "Corte de barba", "duration_hours": 1, "price": 50 },
+    { "service_id": "a1b2c3d4-4444-4000-a000-000000000004", "service_name": "Combo cabelo e barba", "duration_hours": 1.5, "price": 85 }
+  ]
+}
+```

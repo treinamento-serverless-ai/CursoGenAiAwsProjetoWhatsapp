@@ -4,5 +4,8 @@
   "parameters": [],
   "sessionAttributes": {
     "userId": "5511999887766"
+  },
+  "promptSessionAttributes": {
+    "userId": "5511999887766"
   }
 }

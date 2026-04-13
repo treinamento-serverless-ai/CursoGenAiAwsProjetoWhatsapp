@@ -1,8 +1,5 @@
 {
   "actionGroup": "ListProfessionals",
   "function": "list_professionals",
-  "parameters": [],
-  "sessionAttributes": {
-    "userId": "5511999887766"
-  }
+  "parameters": []
 }

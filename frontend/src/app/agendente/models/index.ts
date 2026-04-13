@@ -8,7 +8,7 @@ export interface Appointment {
   professional_name: string;
   service_id: string;
   service_name: string;
-  status: 'CONFIRMED' | 'PENDING' | 'CANCELLED' | 'COMPLETED';
+  status: 'scheduled' | 'completed' | 'cancelled' | 'no_show';
   created_at?: string;
   updated_at?: string;
 }
@@ -44,7 +44,7 @@ export interface SchedulingPolicy {
 export interface Service {
   service_id: string;
   name: string;
-  description?: string;
+  description: string;
   category?: string;
   is_active: boolean;
 }
@@ -65,7 +65,7 @@ export interface Client {
 export interface ConversationMessage {
   phone_number: string;
   timestamp: number;
-  sender: 'user' | 'ai' | 'human' | 'system';
+  sender: 'user' | 'ai' | 'human' | 'system' | 'auto';
   content: string;
   message_id?: string;
   sender_email?: string;

@@ -281,6 +281,7 @@ locals {
         DYNAMODB_APPOINTMENTS_TABLE  = aws_dynamodb_table.appointments.name
         DYNAMODB_PROFESSIONALS_TABLE = aws_dynamodb_table.professionals.name
         DYNAMODB_CLIENTS_TABLE       = aws_dynamodb_table.clients.name
+        DYNAMODB_SERVICES_TABLE      = aws_dynamodb_table.services.name
         APPCONFIG_APPLICATION        = aws_appconfig_application.main.id
         APPCONFIG_ENVIRONMENT        = aws_appconfig_environment.main.environment_id
         APPCONFIG_CONFIGURATION      = aws_appconfig_configuration_profile.main.configuration_profile_id
@@ -346,14 +347,16 @@ locals {
 
     agent_resolve_date_reference = {
       name_key                   = "agent-resolve-date-reference"
-      description                = "Resolves temporal references (TODAY, TOMORROW, NEXT_WEEK) into concrete dates - ${var.project_name} ${var.environment}"
+      description                = "Resolves temporal references into concrete dates using Bedrock LLM - ${var.project_name} ${var.environment}"
       code_path                  = "../../src/lambda/agent_resolve_date_reference"
       runtime                    = "python3.13"
       memory_size                = 128
-      timeout                    = 10
+      timeout                    = 30
       log_retention_days         = 365
       allow_bedrock_agent_invoke = true
-      environment_variables      = {}
+      environment_variables = {
+        BEDROCK_MODEL_ID = var.bedrock_agent_foundation_model
+      }
     }
   }
 }
@@ -680,6 +683,26 @@ resource "aws_iam_role_policy" "lambda_bedrock_invoke" {
         "bedrock:InvokeAgent"
       ]
       Resource = "arn:aws:bedrock:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:agent-alias/${aws_bedrockagent_agent.agendente.agent_id}/*"
+    }]
+  })
+}
+
+# Política para invocar modelos Bedrock (para lambdas com BEDROCK_MODEL_ID)
+resource "aws_iam_role_policy" "lambda_bedrock_model_invoke" {
+  for_each = {
+    for key, config in local.lambdas_config : key => config
+    if contains(keys(lookup(config, "environment_variables", {})), "BEDROCK_MODEL_ID")
+  }
+
+  name = "bedrock-model-invoke"
+  role = aws_iam_role.lambda_execution[each.key].id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["bedrock:InvokeModel", "bedrock:Converse"]
+      Resource = "arn:aws:bedrock:${data.aws_region.current.name}::foundation-model/*"
     }]
   })
 }

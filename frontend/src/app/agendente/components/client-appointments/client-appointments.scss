@@ -123,10 +123,10 @@
   border-radius: 4px;
   font-weight: 500;
 
-  &.confirmed { background: #e8f5e9; color: #2e7d32; }
-  &.pending { background: #fff3e0; color: #e65100; }
+  &.scheduled { background: #e3f2fd; color: #1565c0; }
+  &.completed { background: #e8f5e9; color: #2e7d32; }
   &.cancelled { background: #ffebee; color: #c62828; }
-  &.completed { background: #f5f5f5; color: #616161; }
+  &.no_show { background: #fff3e0; color: #e65100; }
 }
 
 .btn-cancel {

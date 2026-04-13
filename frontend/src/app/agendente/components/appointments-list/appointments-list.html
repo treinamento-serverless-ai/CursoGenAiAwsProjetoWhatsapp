@@ -24,9 +24,10 @@
         <label>Status:</label>
         <select [(ngModel)]="filterStatus" (change)="load()">
           <option value="">Todos os status</option>
-          <option value="PENDING">Pendente</option>
-          <option value="CONFIRMED">Confirmado</option>
-          <option value="CANCELLED">Cancelado</option>
+          <option value="scheduled">Agendado</option>
+          <option value="completed">Concluído</option>
+          <option value="cancelled">Cancelado</option>
+          <option value="no_show">Não compareceu</option>
         </select>
       </div>
     </div>
@@ -63,15 +64,21 @@
               </td>
               <td class="actions">
                 <button 
-                  (click)="updateStatus(appt, 'CONFIRMED')" 
+                  (click)="updateStatus(appt, 'completed')" 
                   class="btn-confirm"
-                  [disabled]="appt.status !== 'PENDING'">
-                  Confirmar
+                  [disabled]="appt.status !== 'scheduled'">
+                  Concluído
                 </button>
                 <button 
-                  (click)="updateStatus(appt, 'CANCELLED')" 
+                  (click)="updateStatus(appt, 'no_show')" 
+                  class="btn-noshow"
+                  [disabled]="appt.status !== 'scheduled'">
+                  Não compareceu
+                </button>
+                <button 
+                  (click)="updateStatus(appt, 'cancelled')" 
                   class="btn-cancel"
-                  [disabled]="appt.status !== 'PENDING'">
+                  [disabled]="appt.status !== 'scheduled'">
                   Cancelar
                 </button>
               </td>

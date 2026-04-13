@@ -3,11 +3,18 @@
   "function": "cancel_appointment",
   "parameters": [
     {
-      "name": "appointment_id",
-      "value": "appt-001"
+      "name": "service_name",
+      "value": "Corte de cabelo simples"
+    },
+    {
+      "name": "appointment_date",
+      "value": "2026-04-20"
     }
   ],
   "sessionAttributes": {
+    "userId": "5511999887766"
+  },
+  "promptSessionAttributes": {
     "userId": "5511999887766"
   }
 }

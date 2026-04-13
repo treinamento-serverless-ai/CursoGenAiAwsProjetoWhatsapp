@@ -82,10 +82,10 @@ export class CalendarView implements OnInit {
 
   getStatusColor(status: string): string {
     const colors: Record<string, string> = {
-      CONFIRMED: '#4caf50',
-      PENDING: '#ff9800',
-      CANCELLED: '#f44336',
-      COMPLETED: '#9e9e9e',
+      scheduled: '#2196f3',
+      completed: '#4caf50',
+      cancelled: '#f44336',
+      no_show: '#ff9800',
     };
     return colors[status] || '#666';
   }

@@ -129,10 +129,17 @@
       <div class="form-section">
         <h2>Política de Agendamento</h2>
         <div class="form-group">
-          <label>Tipo</label>
+          <label>
+            Tipo
+            <span class="help-icon"
+              matTooltip="Minutos Flexíveis: cliente pode agendar em intervalos variados (ex: 09:00, 09:30, 10:00). Ideal para serviços de duração variável.
+
+Slots Fixos: cliente só pode agendar em horários cheios definidos pela janela (ex: 09:00, 10:00, 11:00). Ideal para agendas com duração padronizada."
+              matTooltipClass="multiline-tooltip">ⓘ</span>
+          </label>
           <select [(ngModel)]="professional.scheduling_policy!.type" name="policy_type">
-            <option value="FLEXIBLE_MINUTES">Minutos Flexíveis</option>
-            <option value="FIXED_SLOTS">Slots Fixos</option>
+            <option value="FLEXIBLE_MINUTES">Minutos Flexíveis — horários a cada 30 min (09:00, 09:30...)</option>
+            <option value="FIXED_SLOTS">Slots Fixos — horários a cada hora cheia (09:00, 10:00...)</option>
           </select>
         </div>
       </div>

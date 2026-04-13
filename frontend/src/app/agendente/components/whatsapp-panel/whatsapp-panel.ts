@@ -154,7 +154,7 @@ export class WhatsappPanel implements OnInit, OnDestroy {
         ? `Você (${msg.sender_email})`
         : `Atendimento Humano (${msg.sender_email})`;
     }
-    const labels: Record<string, string> = { user: 'Cliente', ai: 'IA', human: 'Atendimento Humano', system: 'Sistema' };
+    const labels: Record<string, string> = { user: 'Cliente', ai: 'IA', human: 'Atendimento Humano', system: 'Sistema', auto: 'Resposta Autom\u00E1tica' };
     return labels[msg.sender] || msg.sender;
   }
 

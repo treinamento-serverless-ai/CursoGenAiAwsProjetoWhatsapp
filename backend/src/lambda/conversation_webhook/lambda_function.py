@@ -44,9 +44,13 @@ def get_appconfig():
         return _config_cache
     except Exception as e:
         logger.error(f"CRITICAL: Error reading AppConfig: {e}")
+        if _config_cache:
+            logger.warning("Using stale AppConfig cache as fallback")
+            _config_cache_time = time.time()
+            return _config_cache
         return {
-            'business_hours_start': '08:00',
-            'business_hours_end': '00:00',
+            'business_hours_start': '00:00',
+            'business_hours_end': '23:59',
             'business_hours_timezone': 'America/Sao_Paulo',
             'inactivity_threshold_seconds': 60,
             'audio_processing_grace_period': 15,
@@ -235,6 +239,8 @@ def handle_incoming_message(body):
                         send_reply_message(user_id, message_id, transcribe_disabled_msg, config)
                     else:
                         send_unavailable_message(user_id, transcribe_disabled_msg)
+                    save_message_to_history(user_id, message_id, timestamp, None, 'user')
+                    save_message_to_history(user_id, '', int(time.time()), transcribe_disabled_msg, 'auto')
                     continue
                 
                 content = None  # Will be processed by transcription lambda
@@ -251,9 +257,11 @@ def handle_incoming_message(body):
                 today = datetime.now(ZoneInfo(config.get('business_hours_timezone', 'America/Sao_Paulo'))).date().isoformat()
                 last_unavailable_date = client_info.get('last_unavailable_message_date', '')
                 
+                save_message_to_history(user_id, message_id, timestamp, content, 'user')
                 if last_unavailable_date != today:
                     message_text = config.get('banned_message', 'Serviço indisponível.')
                     send_unavailable_message(user_id, message_text)
+                    save_message_to_history(user_id, '', int(time.time()), message_text, 'auto')
                     clients_table.update_item(
                         Key={'phone_number': user_id},
                         UpdateExpression='SET last_unavailable_message_date = :date',
@@ -277,6 +285,7 @@ def handle_incoming_message(body):
                     message_text = message_text.replace('__HORARIO_INICIO__', config.get('business_hours_start', '08:00'))
                     message_text = message_text.replace('__HORARIO_FIM__', config.get('business_hours_end', '00:00'))
                     send_unavailable_message(user_id, message_text)
+                    save_message_to_history(user_id, '', int(time.time()), message_text, 'auto')
                     clients_table.update_item(
                         Key={'phone_number': user_id},
                         UpdateExpression='SET last_unavailable_message_date = :date',
@@ -296,6 +305,7 @@ def handle_incoming_message(body):
                 if last_unavailable_date != today:
                     message_text = config.get('ai_error_message', 'Serviço temporariamente indisponível.')
                     send_unavailable_message(user_id, message_text)
+                    save_message_to_history(user_id, '', int(time.time()), message_text, 'auto')
                     clients_table.update_item(
                         Key={'phone_number': user_id},
                         UpdateExpression='SET last_unavailable_message_date = :date',

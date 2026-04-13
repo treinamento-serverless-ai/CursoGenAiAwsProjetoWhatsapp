@@ -106,7 +106,7 @@ resource "aws_bedrockagent_agent_action_group" "check_availability" {
     member_functions {
       functions {
         name        = "check_availability"
-        description = "Check available appointment time slots for professionals within a date range, optionally filtered by specific professional"
+        description = "Check available appointment time slots for professionals within a date range, optionally filtered by professional name"
         parameters {
           map_block_key = "start_date"
           type          = "string"
@@ -120,9 +120,9 @@ resource "aws_bedrockagent_agent_action_group" "check_availability" {
           required      = false
         }
         parameters {
-          map_block_key = "professional_id"
+          map_block_key = "professional_name"
           type          = "string"
-          description   = "Optional professional ID to filter availability"
+          description   = "Optional name of the professional to filter availability (e.g. Maria Silva)"
           required      = false
         }
       }
@@ -147,7 +147,7 @@ resource "aws_bedrockagent_agent_action_group" "create_appointment" {
     member_functions {
       functions {
         name        = "create_appointment"
-        description = "Create a new appointment in the system. Must have explicit confirmation from client before calling this function"
+        description = "Create a new appointment. Must have explicit confirmation from client before calling. Use service and professional NAMES, not IDs"
         parameters {
           map_block_key = "appointment_date"
           type          = "string"
@@ -155,15 +155,15 @@ resource "aws_bedrockagent_agent_action_group" "create_appointment" {
           required      = true
         }
         parameters {
-          map_block_key = "professional_id"
+          map_block_key = "professional_name"
           type          = "string"
-          description   = "ID of the professional"
+          description   = "Name of the professional (e.g. Maria Silva)"
           required      = true
         }
         parameters {
-          map_block_key = "service_id"
+          map_block_key = "service_name"
           type          = "string"
-          description   = "ID of the service to be performed"
+          description   = "Name of the service (e.g. Corte de cabelo simples)"
           required      = true
         }
       }
@@ -213,9 +213,9 @@ resource "aws_bedrockagent_agent_action_group" "get_service_details" {
         name        = "get_service_details"
         description = "Get detailed information about a specific service including price, duration, and which professionals offer it"
         parameters {
-          map_block_key = "service_id"
+          map_block_key = "service_name"
           type          = "string"
-          description   = "ID of the service"
+          description   = "Name of the service (e.g. Corte de cabelo simples)"
           required      = true
         }
       }
@@ -263,12 +263,18 @@ resource "aws_bedrockagent_agent_action_group" "cancel_appointment" {
     member_functions {
       functions {
         name        = "cancel_appointment"
-        description = "Cancel an existing appointment. System validates that user owns the appointment before canceling"
+        description = "Cancel an existing appointment. Identifies the appointment by service name and/or date"
         parameters {
-          map_block_key = "appointment_id"
+          map_block_key = "service_name"
           type          = "string"
-          description   = "ID of the appointment to cancel"
-          required      = true
+          description   = "Name of the service of the appointment to cancel (e.g. Corte de cabelo simples)"
+          required      = false
+        }
+        parameters {
+          map_block_key = "appointment_date"
+          type          = "string"
+          description   = "Date of the appointment to cancel in ISO format (YYYY-MM-DD)"
+          required      = false
         }
       }
     }

@@ -298,6 +298,17 @@
       font-size: 0.85rem;
     }
   }
+
+  &.auto {
+    align-self: center;
+    max-width: 80%;
+    .message-bubble {
+      background: #e8d5f5;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      border-left: 3px solid #8e44ad;
+    }
+  }
 }
 
 .message-bubble {
