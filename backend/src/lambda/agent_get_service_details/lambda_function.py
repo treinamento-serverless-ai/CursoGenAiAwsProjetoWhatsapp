@@ -13,9 +13,25 @@ professionals_table = dynamodb.Table(os.environ['DYNAMODB_PROFESSIONALS_TABLE'])
 services_table = dynamodb.Table(os.environ['DYNAMODB_SERVICES_TABLE'])
 
 
+def matches_tags(search_term, tags):
+    term = search_term.lower()
+    return any(term in tag.lower() or tag.lower() in term for tag in tags)
+
+
 def fuzzy_find(search_term, items, key, threshold=0.6):
     term = search_term.lower()
     return [item for item in items if SequenceMatcher(None, term, item.get(key, '').lower()).ratio() >= threshold]
+
+
+def find_service(search_term, services):
+    # Priority: tags → name (fuzzy) → description (fuzzy)
+    by_tags = [s for s in services if matches_tags(search_term, s.get('tags', []))]
+    if by_tags:
+        return by_tags
+    by_name = fuzzy_find(search_term, services, 'name')
+    if by_name:
+        return by_name
+    return fuzzy_find(search_term, services, 'description')
 
 
 def lambda_handler(event, context):
@@ -32,10 +48,7 @@ def lambda_handler(event, context):
     try:
         services = services_table.scan(FilterExpression='is_active = :val', ExpressionAttributeValues={':val': True}).get('Items', [])
 
-        # Fuzzy search by name, then by description
-        matches = fuzzy_find(service_name, services, 'name')
-        if not matches:
-            matches = fuzzy_find(service_name, services, 'description')
+        matches = find_service(service_name, services)
         if not matches:
             available = ", ".join(s.get('name', '') for s in services)
             return _response(action_group, function_name,
@@ -44,7 +57,6 @@ def lambda_handler(event, context):
         service = matches[0]
         service_id = service['service_id']
 
-        # Find professionals offering this service
         profs = professionals_table.scan(FilterExpression='is_active = :val', ExpressionAttributeValues={':val': True}).get('Items', [])
         details = []
         for prof in profs:

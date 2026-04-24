@@ -119,7 +119,7 @@ def update_professional(professional_id, data):
         expr_names = {}
         updates = []
         
-        for field in ["name", "specialty", "career_start_date", "social_media_link", "working_days", "working_hours", "services", "scheduling_policy", "is_active"]:
+        for field in ["name", "specialty", "career_start_date", "social_media_link", "working_days", "working_hours", "services", "scheduling_policy", "is_active", "tags"]:
             if field in data:
                 updates.append(f"#{field} = :{field}")
                 expr_names[f"#{field}"] = field

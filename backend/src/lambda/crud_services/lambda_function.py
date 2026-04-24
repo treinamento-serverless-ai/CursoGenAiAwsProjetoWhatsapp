@@ -99,7 +99,7 @@ def update_service(service_id, data):
         expr_names = {}
         updates = []
         
-        for field in ["name", "description", "category", "is_active"]:
+        for field in ["name", "description", "category", "is_active", "tags"]:
             if field in data:
                 updates.append(f"#{field} = :{field}")
                 expr_names[f"#{field}"] = field

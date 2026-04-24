@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { forkJoin } from 'rxjs';
 import { ServicesService } from '../../services/services';
 import { ProfessionalsService } from '../../services/professionals';
@@ -20,7 +23,7 @@ interface ProfessionalLink {
 @Component({
   selector: 'app-service-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, MatProgressSpinnerModule, MatButtonToggleModule],
+  imports: [CommonModule, FormsModule, RouterLink, MatProgressSpinnerModule, MatButtonToggleModule, MatChipsModule, MatIconModule, MatFormFieldModule],
   templateUrl: './service-form.html',
   styleUrl: './service-form.scss',
 })
@@ -39,6 +42,7 @@ export class ServiceForm implements OnInit {
     name: '',
     description: '',
     category: '',
+    tags: [],
     is_active: true,
   };
 
@@ -63,6 +67,7 @@ export class ServiceForm implements OnInit {
     }).subscribe({
       next: ({ service, professionals }) => {
         this.service = service;
+        if (!this.service.tags) this.service.tags = [];
         this.originalProfessionals = professionals.items || [];
         this.professionalLinks = this.originalProfessionals.map((prof) => {
           const existing = prof.services?.find((s) => s.service_id === id);
@@ -79,6 +84,18 @@ export class ServiceForm implements OnInit {
       },
       error: () => this.router.navigate(['/services']),
     });
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const tag = (event.value || '').trim();
+    if (tag && !this.service.tags?.includes(tag)) {
+      this.service.tags = [...(this.service.tags || []), tag];
+    }
+    event.chipInput.clear();
+  }
+
+  removeTag(index: number): void {
+    this.service.tags?.splice(index, 1);
   }
 
   save(): void {
@@ -99,7 +116,6 @@ export class ServiceForm implements OnInit {
           return;
         }
 
-        // Build update requests for professionals whose link status changed
         const updates$ = this.originalProfessionals
           .map((prof) => {
             const link = this.professionalLinks.find(
@@ -109,7 +125,6 @@ export class ServiceForm implements OnInit {
 
             const hadService = prof.services?.some((s) => s.service_id === serviceId);
             if (link.linked === !!hadService && hadService) {
-              // Check if price/duration changed
               const existing = prof.services?.find((s) => s.service_id === serviceId);
               if (
                 existing &&

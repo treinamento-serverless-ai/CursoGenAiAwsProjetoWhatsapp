@@ -37,6 +37,25 @@
         />
       </div>
 
+      <div class="form-group">
+        <label>Tags (palavras-chave para busca pela IA)</label>
+        <mat-form-field class="tags-field" appearance="outline">
+          <mat-chip-grid #chipGrid>
+            @for (tag of service.tags; track $index; let i = $index) {
+              <mat-chip-row (removed)="removeTag(i)">
+                {{ tag }}
+                <button matChipRemove><mat-icon>cancel</mat-icon></button>
+              </mat-chip-row>
+            }
+          </mat-chip-grid>
+          <input
+            [matChipInputFor]="chipGrid"
+            placeholder="Digite e pressione Enter..."
+            (matChipInputTokenEnd)="addTag($event)"
+          />
+        </mat-form-field>
+      </div>
+
       @if (isEdit && professionalLinks.length > 0) {
         <div class="form-section">
           <h2>Profissionais</h2>

@@ -47,6 +47,25 @@
       </div>
 
       <div class="form-section">
+        <h2>Tags (palavras-chave para busca pela IA)</h2>
+        <mat-form-field class="tags-field" appearance="outline">
+          <mat-chip-grid #chipGrid>
+            @for (tag of professional.tags; track $index; let i = $index) {
+              <mat-chip-row (removed)="removeTag(i)">
+                {{ tag }}
+                <button matChipRemove><mat-icon>cancel</mat-icon></button>
+              </mat-chip-row>
+            }
+          </mat-chip-grid>
+          <input
+            [matChipInputFor]="chipGrid"
+            placeholder="Digite e pressione Enter..."
+            (matChipInputTokenEnd)="addTag($event)"
+          />
+        </mat-form-field>
+      </div>
+
+      <div class="form-section">
         <h2>Horário de Trabalho</h2>
         <div class="weekdays">
           @for (day of weekDays; track day.key) {

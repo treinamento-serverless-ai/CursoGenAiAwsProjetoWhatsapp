@@ -143,6 +143,7 @@ Catálogo de serviços oferecidos pelo estabelecimento.
 | `name` | String | Sim | Nome do serviço |
 | `description` | String | Não | Descrição detalhada |
 | `category` | String | Não | Categoria (Cabelo, Barba, Combo, etc.) |
+| `tags` | List | Não | Lista de palavras-chave para busca pela IA |
 | `is_active` | Boolean | Sim | Se o serviço está ativo |
 
 **Exemplo**:
@@ -152,6 +153,7 @@ Catálogo de serviços oferecidos pelo estabelecimento.
   "name": "Corte de Cabelo",
   "description": "Corte masculino tradicional",
   "category": "Cabelo",
+  "tags": ["corte", "cabelo", "masculino", "tradicional"],
   "is_active": true
 }
 ```
@@ -171,6 +173,7 @@ Informações dos profissionais que atendem no estabelecimento.
 | `specialty` | String | Não | Especialidade |
 | `career_start_date` | String | Não | Data de início da carreira (YYYY-MM-DD) |
 | `social_media_link` | String | Não | Link para rede social |
+| `tags` | List | Não | Lista de palavras-chave para busca pela IA |
 | `working_days` | List | Sim | Dias da semana que trabalha |
 | `working_hours` | Map | Sim | Horário de trabalho (start, end) |
 | `services` | List | Sim | Lista de serviços oferecidos com preços |
@@ -281,6 +284,7 @@ Todas as operações de leitura usam consistência eventual por padrão. Para op
   "name": "Corte de cabelo simples",
   "description": "Corte tradicional com máquina e tesoura para cabelos lisos ou ondulados. Serviço rápido e prático, ideal para o dia a dia.",
   "category": "Cabelo",
+  "tags": ["corte", "cabelo", "simples", "máquina", "tesoura", "liso", "ondulado"],
   "is_active": true
 }
 ```
@@ -291,6 +295,7 @@ Todas as operações de leitura usam consistência eventual por padrão. Para op
   "name": "Corte de cabelo cacheado",
   "description": "Corte especializado para cabelos cacheados e crespos, respeitando a curvatura natural dos fios. Inclui finalização com produtos específicos para cachos.",
   "category": "Cabelo",
+  "tags": ["corte", "cabelo", "cacheado", "crespo", "cachos", "finalização"],
   "is_active": true
 }
 ```
@@ -301,6 +306,7 @@ Todas as operações de leitura usam consistência eventual por padrão. Para op
   "name": "Corte de barba",
   "description": "Aparar e modelar a barba com navalha e máquina, inclui alinhamento e hidratação. Ideal para quem quer manter a barba bem cuidada e com formato definido.",
   "category": "Barba",
+  "tags": ["barba", "navalha", "alinhamento", "hidratação", "modelagem"],
   "is_active": true
 }
 ```
@@ -311,6 +317,7 @@ Todas as operações de leitura usam consistência eventual por padrão. Para op
   "name": "Combo cabelo e barba",
   "description": "Pacote combinado de corte de cabelo simples e corte de barba com preço especial. Inclui corte tradicional com máquina e tesoura mais alinhamento e modelagem da barba.",
   "category": "Combo",
+  "tags": ["combo", "cabelo", "barba", "pacote", "promoção"],
   "is_active": true
 }
 ```
@@ -326,6 +333,7 @@ Cada profissional referencia os `service_id` dos serviços acima na sua lista de
   "specialty": "Cabelos cacheados",
   "career_start_date": "2018-03-15",
   "social_media_link": "",
+  "tags": ["cacheado", "crespo", "cachos", "corte especializado"],
   "is_active": true,
   "working_days": ["monday", "tuesday", "wednesday", "thursday", "friday"],
   "working_hours": { "start": "09:00", "end": "18:00" },
@@ -350,6 +358,7 @@ Cada profissional referencia os `service_id` dos serviços acima na sua lista de
   "specialty": "Cortes sociais e modernos",
   "career_start_date": "2020-06-01",
   "social_media_link": "",
+  "tags": ["social", "moderno", "degradê", "corte feminino"],
   "is_active": true,
   "working_days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"],
   "working_hours": { "start": "08:00", "end": "17:00" },
@@ -374,6 +383,7 @@ Cada profissional referencia os `service_id` dos serviços acima na sua lista de
   "specialty": "Barba e acabamento",
   "career_start_date": "2022-01-10",
   "social_media_link": "",
+  "tags": ["barba", "acabamento", "navalha", "alinhamento"],
   "is_active": true,
   "working_days": ["tuesday", "wednesday", "thursday", "friday", "saturday"],
   "working_hours": { "start": "10:00", "end": "19:00" },

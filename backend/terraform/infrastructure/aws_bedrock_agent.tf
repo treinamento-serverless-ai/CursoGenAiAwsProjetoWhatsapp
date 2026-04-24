@@ -85,7 +85,19 @@ resource "aws_bedrockagent_agent_action_group" "list_professionals" {
     member_functions {
       functions {
         name        = "list_professionals"
-        description = "Retrieve list of all active professionals/staff with their details (name, specialty, experience, contact)"
+        description = "Retrieve list of active professionals/staff with their details (name, specialty, experience, contact). When the user mentions a specific area of expertise or service type, ALWAYS pass it as specialty or service_name to filter results"
+        parameters {
+          map_block_key = "specialty"
+          type          = "string"
+          description   = "Filter by specialty area (e.g. Cabelos cacheados, Barba e acabamento). Use when user mentions a specific area of expertise"
+          required      = false
+        }
+        parameters {
+          map_block_key = "service_name"
+          type          = "string"
+          description   = "Filter by service name (e.g. Corte de cabelo simples). Use when user mentions a specific service"
+          required      = false
+        }
       }
     }
   }
@@ -188,7 +200,13 @@ resource "aws_bedrockagent_agent_action_group" "list_services" {
     member_functions {
       functions {
         name        = "list_services"
-        description = "Retrieve list of all active services/treatments offered with basic information (name, description, category)"
+        description = "Retrieve list of active services/treatments offered. Use search_term to filter by area when the user mentions a specific topic (e.g. 'cabelo', 'barba', 'combo')"
+        parameters {
+          map_block_key = "search_term"
+          type          = "string"
+          description   = "Optional search term to filter services by name, description or tags (e.g. 'cabelo', 'barba', 'combo')"
+          required      = false
+        }
       }
     }
   }

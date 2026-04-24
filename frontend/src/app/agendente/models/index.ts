@@ -20,6 +20,7 @@ export interface Professional {
   specialty?: string;
   career_start_date?: string;
   social_media_link?: string;
+  tags?: string[];
   working_days: string[];
   working_hours: { start: string; end: string };
   services: ProfessionalService[];
@@ -46,6 +47,7 @@ export interface Service {
   name: string;
   description: string;
   category?: string;
+  tags?: string[];
   is_active: boolean;
 }
 

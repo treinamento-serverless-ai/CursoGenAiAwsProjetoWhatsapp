@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { ProfessionalsService } from '../../services/professionals';
 import { ServicesService } from '../../services/services';
 import { Professional, ProfessionalService, Service } from '../../models';
@@ -11,7 +14,7 @@ import { Professional, ProfessionalService, Service } from '../../models';
 @Component({
   selector: 'app-professional-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, MatProgressSpinnerModule, MatTooltipModule],
+  imports: [CommonModule, FormsModule, RouterLink, MatProgressSpinnerModule, MatTooltipModule, MatChipsModule, MatIconModule, MatFormFieldModule],
   templateUrl: './professional-form.html',
   styleUrl: './professional-form.scss',
 })
@@ -32,6 +35,7 @@ export class ProfessionalForm implements OnInit {
     specialty: '',
     career_start_date: '',
     social_media_link: '',
+    tags: [],
     working_days: [],
     working_hours: { start: '09:00', end: '18:00' },
     services: [],
@@ -74,10 +78,11 @@ export class ProfessionalForm implements OnInit {
   loadProfessional(id: string): void {
     this.loading = true;
     this.cdr.markForCheck();
-    
+
     this.professionalsService.getProfessional(id).subscribe({
       next: (prof) => {
         this.professional = prof;
+        if (!this.professional.tags) this.professional.tags = [];
         this.loading = false;
         this.cdr.markForCheck();
       },
@@ -100,6 +105,18 @@ export class ProfessionalForm implements OnInit {
 
   isDaySelected(day: string): boolean {
     return this.professional.working_days?.includes(day) || false;
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const tag = (event.value || '').trim();
+    if (tag && !this.professional.tags?.includes(tag)) {
+      this.professional.tags = [...(this.professional.tags || []), tag];
+    }
+    event.chipInput.clear();
+  }
+
+  removeTag(index: number): void {
+    this.professional.tags?.splice(index, 1);
   }
 
   addService(): void {
@@ -132,7 +149,7 @@ export class ProfessionalForm implements OnInit {
   save(): void {
     this.saving = true;
     this.cdr.markForCheck();
-    
+
     const obs = this.isEdit
       ? this.professionalsService.updateProfessional(
           this.professional.professional_id!,
