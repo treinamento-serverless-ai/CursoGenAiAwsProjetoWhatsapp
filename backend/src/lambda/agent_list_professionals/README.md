@@ -1,20 +1,20 @@
 # agent_list_professionals
 
-Lista todos os profissionais ativos com informacoes resumidas.
+Lista todos os profissionais ativos com informações resumidas.
 
 ## Funcionalidade
 
-Retorna lista de profissionais disponiveis incluindo:
+Retorna lista de profissionais disponíveis incluindo:
 - Nome
 - Especialidade
-- Anos de experiencia (calculado automaticamente)
+- Anos de experiência (calculado automaticamente)
 - Link de rede social
 
-## Parametros
+## Parâmetros
 
-Nenhum parametro necessario.
+Nenhum parâmetro necessário.
 
-## Variaveis de Ambiente
+## Variáveis de Ambiente
 
 - `DYNAMODB_PROFESSIONALS_TABLE`: Nome da tabela DynamoDB de profissionais
 

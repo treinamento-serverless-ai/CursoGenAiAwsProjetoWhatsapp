@@ -6,17 +6,17 @@ Gerencia atendimentos humanos via dashboard administrativo.
 
 - Lista clientes com conversas ativas (aguardando atendimento humano)
 - Envia mensagens como atendente humano via WhatsApp
-- Encerra atendimento: arquiva conversa no S3, limpa historico no DynamoDB
+- Encerra atendimento: arquiva conversa no S3, limpa histórico no DynamoDB
 
 ## Endpoints
 
-- `GET /api/attendance`: Lista atendimentos abertos com ultima mensagem de cada cliente
+- `GET /api/attendance`: Lista atendimentos abertos com última mensagem de cada cliente
 - `POST /api/attendance/message`: Envia mensagem como atendente humano
-- `POST /api/attendance/close`: Encerra atendimento, arquiva conversa no S3 e limpa historico
+- `POST /api/attendance/close`: Encerra atendimento, arquiva conversa no S3 e limpa histórico
 
-## Variaveis de Ambiente
+## Variáveis de Ambiente
 
 - `DYNAMODB_CLIENTS_TABLE`: Tabela DynamoDB de clientes
-- `DYNAMODB_CONVERSATION_HISTORY_TABLE`: Tabela DynamoDB de historico de conversas
+- `DYNAMODB_CONVERSATION_HISTORY_TABLE`: Tabela DynamoDB de histórico de conversas
 - `SECRET_ARN`: ARN do secret com credenciais da Meta WhatsApp API
 - `S3_ARCHIVE_BUCKET`: Bucket S3 para arquivamento de conversas

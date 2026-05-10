@@ -1,22 +1,22 @@
 # agent_list_services
 
-Lista todos os servicos ativos oferecidos pelo estabelecimento.
+Lista todos os serviços ativos oferecidos pelo estabelecimento.
 
 ## Funcionalidade
 
-Retorna catalogo de servicos com:
-- ID do servico
+Retorna catálogo de serviços com:
+- ID do serviço
 - Nome
-- Descricao
+- Descrição
 - Categoria
 
-## Parametros
+## Parâmetros
 
-Nenhum parametro necessario.
+Nenhum parâmetro necessário.
 
-## Variaveis de Ambiente
+## Variáveis de Ambiente
 
-- `DYNAMODB_SERVICES_TABLE`: Nome da tabela DynamoDB de servicos
+- `DYNAMODB_SERVICES_TABLE`: Nome da tabela DynamoDB de serviços
 
 ## Exemplo de Resposta
 

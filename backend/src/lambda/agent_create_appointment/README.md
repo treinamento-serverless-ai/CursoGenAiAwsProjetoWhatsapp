@@ -4,28 +4,28 @@ Cria um novo agendamento no sistema.
 
 ## Funcionalidade
 
-- Resolve profissional e servico por nome via busca fuzzy (`difflib.SequenceMatcher`)
-- Valida que o profissional oferece o servico solicitado
+- Resolve profissional e serviço por nome via busca fuzzy (`difflib.SequenceMatcher`)
+- Valida que o profissional oferece o serviço solicitado
 - Verifica limite de dias para agendamento (AppConfig)
 - Gera `appointment_id` automaticamente (UUID)
 - Cria registro na tabela de agendamentos com status `scheduled`
 
-## Parametros
+## Parâmetros
 
-| Parametro | Tipo | Obrigatorio | Descricao |
+| Parâmetro | Tipo | Obrigatório | Descrição |
 |-----------|------|-------------|-----------|
 | appointment_date | string | Sim | Data/hora (YYYY-MM-DDTHH:MM:SS) |
 | professional_name | string | Sim | Nome do profissional (busca fuzzy) |
-| service_name | string | Sim | Nome do servico (busca fuzzy) |
+| service_name | string | Sim | Nome do serviço (busca fuzzy) |
 
 O `userId` vem via `sessionAttributes`.
 
-## Variaveis de Ambiente
+## Variáveis de Ambiente
 
 - `DYNAMODB_APPOINTMENTS_TABLE`: Tabela de agendamentos
 - `DYNAMODB_PROFESSIONALS_TABLE`: Tabela de profissionais
-- `DYNAMODB_SERVICES_TABLE`: Tabela de servicos
+- `DYNAMODB_SERVICES_TABLE`: Tabela de serviços
 - `DYNAMODB_CLIENTS_TABLE`: Tabela de clientes
-- `APPCONFIG_APPLICATION`: ID da aplicacao AppConfig
+- `APPCONFIG_APPLICATION`: ID da aplicação AppConfig
 - `APPCONFIG_ENVIRONMENT`: ID do ambiente AppConfig
-- `APPCONFIG_CONFIGURATION`: ID do perfil de configuracao
+- `APPCONFIG_CONFIGURATION`: ID do perfil de configuração

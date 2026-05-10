@@ -1,16 +1,16 @@
 # agent_list_user_appointments
 
-Lista agendamentos futuros do usuario baseado no telefone.
+Lista agendamentos futuros do usuário baseado no telefone.
 
 ## Funcionalidade
 
-- Busca agendamentos futuros (nao cancelados) do usuario via GSI `client_phone-appointment_date-index`
-- Retorna dados legiveis (sem IDs internos): data, profissional, servico, status
+- Busca agendamentos futuros (não cancelados) do usuário via GSI `client_phone-appointment_date-index`
+- Retorna dados legíveis (sem IDs internos): data, profissional, serviço, status
 
-## Parametros
+## Parâmetros
 
-Nenhum parametro necessario. O `userId` vem via `sessionAttributes`.
+Nenhum parâmetro necessário. O `userId` vem via `sessionAttributes`.
 
-## Variaveis de Ambiente
+## Variáveis de Ambiente
 
 - `DYNAMODB_APPOINTMENTS_TABLE`: Tabela de agendamentos

@@ -1,22 +1,22 @@
 # agent_get_service_details
 
-Retorna detalhes completos de um servico especifico incluindo preco e duracao por profissional.
+Retorna detalhes completos de um serviço específico incluindo preço e duração por profissional.
 
 ## Funcionalidade
 
-Busca informacoes detalhadas de um servico mostrando:
-- Nome e descricao do servico
+Busca informações detalhadas de um serviço mostrando:
+- Nome e descrição do serviço
 - Categoria
-- Lista de profissionais que oferecem o servico
-- Preco e duracao por profissional
+- Lista de profissionais que oferecem o serviço
+- Preço e duração por profissional
 
-## Parametros
+## Parâmetros
 
-- `service_id` (obrigatorio): ID do servico
+- `service_id` (obrigatório): ID do serviço
 
-## Variaveis de Ambiente
+## Variáveis de Ambiente
 
-- `DYNAMODB_SERVICES_TABLE`: Nome da tabela DynamoDB de servicos
+- `DYNAMODB_SERVICES_TABLE`: Nome da tabela DynamoDB de serviços
 - `DYNAMODB_PROFESSIONALS_TABLE`: Nome da tabela DynamoDB de profissionais
 
 ## Exemplo de Resposta

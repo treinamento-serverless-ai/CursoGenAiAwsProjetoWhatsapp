@@ -1,6 +1,6 @@
 # crud_services
 
-Gerencia servicos oferecidos via dashboard administrativo.
+Gerencia serviços oferecidos via dashboard administrativo.
 
 ## Funcionalidade
 

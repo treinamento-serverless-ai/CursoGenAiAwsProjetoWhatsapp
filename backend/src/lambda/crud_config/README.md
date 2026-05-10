@@ -1,20 +1,20 @@
 # crud_config
 
-Gerencia configuracoes da aplicacao via AWS AppConfig.
+Gerencia configurações da aplicação via AWS AppConfig.
 
 ## Funcionalidade
 
-- Busca configuracao atual do AppConfig (GET)
-- Atualiza configuracoes no AppConfig com deploy automatico (PUT)
-- Todos os valores sao armazenados como strings no AppConfig
+- Busca configuração atual do AppConfig (GET)
+- Atualiza configurações no AppConfig com deploy automático (PUT)
+- Todos os valores são armazenados como strings no AppConfig
 
 ## Endpoints
 
-- `GET /api/config`: Retorna configuracao atual
-- `PUT /api/config`: Atualiza configuracoes (aceita atualizacao parcial)
+- `GET /api/config`: Retorna configuração atual
+- `PUT /api/config`: Atualiza configurações (aceita atualização parcial)
 
-## Variaveis de Ambiente
+## Variáveis de Ambiente
 
-- `APPCONFIG_APP_ID`: ID da aplicacao AppConfig
+- `APPCONFIG_APP_ID`: ID da aplicação AppConfig
 - `APPCONFIG_ENV_ID`: ID do ambiente AppConfig
-- `APPCONFIG_PROFILE_ID`: ID do perfil de configuracao AppConfig
+- `APPCONFIG_PROFILE_ID`: ID do perfil de configuração AppConfig

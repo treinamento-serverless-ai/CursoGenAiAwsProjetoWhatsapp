@@ -1,6 +1,6 @@
 # crud_conversations
 
-Gerencia historico de conversas do WhatsApp via dashboard administrativo.
+Gerencia histórico de conversas do WhatsApp via dashboard administrativo.
 
 ## Funcionalidade
 
