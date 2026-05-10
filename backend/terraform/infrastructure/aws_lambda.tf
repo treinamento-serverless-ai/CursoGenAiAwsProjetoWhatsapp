@@ -344,20 +344,6 @@ locals {
         DYNAMODB_APPOINTMENTS_TABLE = aws_dynamodb_table.appointments.name
       }
     }
-
-    agent_resolve_date_reference = {
-      name_key                   = "agent-resolve-date-reference"
-      description                = "Resolves temporal references into concrete dates using Bedrock LLM - ${var.project_name} ${var.environment}"
-      code_path                  = "../../src/lambda/agent_resolve_date_reference"
-      runtime                    = "python3.13"
-      memory_size                = 128
-      timeout                    = 30
-      log_retention_days         = 365
-      allow_bedrock_agent_invoke = true
-      environment_variables = {
-        BEDROCK_MODEL_ID = var.bedrock_agent_foundation_model
-      }
-    }
   }
 }
 
@@ -665,7 +651,7 @@ resource "aws_iam_role_policy" "lambda_appconfig_access" {
   })
 }
 
-# Política para invocar Bedrock Agent (para conversation_invoke_agent)
+# Política para invocar Bedrock Agent (para Lambdas que usam BEDROCK_AGENT_ID)
 resource "aws_iam_role_policy" "lambda_bedrock_invoke" {
   for_each = {
     for key, config in local.lambdas_config : key => config

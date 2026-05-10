@@ -73,7 +73,7 @@ my_new_lambda = {
 | **Step Functions** | 3 | Executions (Started/Succeeded/Failed/TimedOut), Duration (avg/p99), Throttled |
 | **Lambda - Conversation Flow** | 5 | Invocations, Errors, Duration — webhook, check-freshness, process-and-send, transcription, archiver |
 | **Lambda - CRUD** | 7 | Invocations, Errors, Duration — appointments, professionals, services, clients, attendance, conversations, config |
-| **Lambda - Bedrock Agent** | 8 | Invocations, Errors, Duration — todas as action groups |
+| **Lambda - Bedrock Agent** | 7 | Invocations, Errors, Duration — todas as action groups |
 | **Lambda - Scheduled** | 1 | Invocations, Errors, Duration — security-monitor |
 | **DynamoDB** | 6 | Read/Write Capacity Units, Throttled — todas as 6 tabelas |
 

@@ -300,32 +300,3 @@ resource "aws_bedrockagent_agent_action_group" "cancel_appointment" {
 
   depends_on = [aws_bedrockagent_agent_action_group.list_user_appointments]
 }
-
-resource "aws_bedrockagent_agent_action_group" "resolve_date_reference" {
-  action_group_name          = "ResolveDateReference"
-  agent_id                   = aws_bedrockagent_agent.agendente.id
-  agent_version              = "DRAFT"
-  skip_resource_in_use_check = true
-  description                = "Use when client mentions temporal references like 'tomorrow', 'next week', 'in 3 days' to convert them into concrete dates"
-
-  action_group_executor {
-    lambda = aws_lambda_function.functions["agent_resolve_date_reference"].arn
-  }
-
-  function_schema {
-    member_functions {
-      functions {
-        name        = "resolve_date_reference"
-        description = "Converts temporal references (TODAY, TOMORROW, NEXT_WEEK, CURRENT_WEEK, +3 days, +2 weeks, NEXT_MONTH) into concrete ISO dates or date ranges"
-        parameters {
-          map_block_key = "reference"
-          type          = "string"
-          description   = "Temporal reference to resolve. Examples: TODAY, TOMORROW, NEXT_WEEK, CURRENT_WEEK, +3 days, +2 weeks, NEXT_MONTH"
-          required      = true
-        }
-      }
-    }
-  }
-
-  depends_on = [aws_bedrockagent_agent_action_group.cancel_appointment]
-}

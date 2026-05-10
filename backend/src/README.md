@@ -37,7 +37,6 @@ Executam acoes solicitadas pelo Bedrock Agent durante conversas WhatsApp:
 - `agent_list_professionals`: Lista profissionais disponiveis
 - `agent_list_services`: Lista servicos oferecidos
 - `agent_list_user_appointments`: Lista agendamentos do usuario
-- `agent_resolve_date_reference`: Resolve referencias temporais (hoje, amanha, etc)
 
 ### Conversation
 
@@ -45,9 +44,7 @@ Processam mensagens do WhatsApp e orquestram o fluxo de conversa:
 
 - `conversation_archiver`: Arquiva conversas antigas no S3
 - `conversation_check_freshness`: Verifica se mensagens estao prontas para processar
-- `conversation_invoke_agent`: Invoca Bedrock Agent (deprecated - usar process_and_send)
 - `conversation_process_and_send`: Invoca Bedrock Agent e envia resposta
-- `conversation_send_message`: Envia mensagens via WhatsApp (deprecated - usar process_and_send)
 - `conversation_transcription`: Transcreve audios com Amazon Transcribe
 - `conversation_webhook`: Recebe mensagens da Meta API
 

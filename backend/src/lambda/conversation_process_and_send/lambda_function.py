@@ -6,7 +6,10 @@ import logging
 import urllib3
 
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from botocore.config import Config
+
+TIMEZONE = ZoneInfo("America/Sao_Paulo")
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -234,6 +237,7 @@ def lambda_handler(event, context):
     try:
         logger.info(f"[{request_id}] Invoking Bedrock Agent: agentId={os.environ['BEDROCK_AGENT_ID']}, aliasId={os.environ['BEDROCK_AGENT_ALIAS_ID']}, sessionId={session_id}")
         
+        now = datetime.now(TIMEZONE)
         bedrock_response = bedrock_client.invoke_agent(
             agentId=os.environ['BEDROCK_AGENT_ID'],
             agentAliasId=os.environ['BEDROCK_AGENT_ALIAS_ID'],
@@ -244,7 +248,9 @@ def lambda_handler(event, context):
                     'userId': user_id
                 },
                 'promptSessionAttributes': {
-                    'userId': user_id
+                    'userId': user_id,
+                    'currentDate': now.strftime("%Y-%m-%d"),
+                    'currentDayOfWeek': now.strftime("%A")
                 }
             }
         )

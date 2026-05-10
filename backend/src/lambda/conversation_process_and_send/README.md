@@ -16,9 +16,13 @@ Lambda consolidada que processa mensagens do buffer, invoca o Bedrock Agent e en
 
 O `userId` (telefone do cliente) e passado ao Bedrock Agent via:
 - `sessionAttributes`: persistido pelo runtime do Agent, propagado automaticamente para todos os Action Groups
-- `promptSessionAttributes`: injetado no prompt do modelo (redundancia)
+- `promptSessionAttributes`: injetado no prompt do modelo (redundancia para userId, essencial para contexto temporal)
 
-Isso garante que todas as lambdas dos Action Groups recebam o `userId` mesmo em chamadas multiplas na mesma turn.
+Alem do `userId`, os seguintes atributos temporais sao injetados em `promptSessionAttributes` a cada turn:
+- `currentDate`: data atual no fuso America/Sao_Paulo (YYYY-MM-DD)
+- `currentDayOfWeek`: dia da semana em ingles (e.g. "Monday")
+
+Isso permite que o agente resolva referencias temporais relativas ("amanha", "proxima segunda") sem precisar de um Action Group dedicado.
 
 ## Variaveis de Ambiente
 

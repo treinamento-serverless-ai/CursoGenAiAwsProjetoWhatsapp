@@ -288,7 +288,7 @@ resource "aws_cloudwatch_dashboard" "main" {
         },
       ],
       [
-        for i, name_key in ["agent-list-professionals", "agent-check-availability", "agent-create-appointment", "agent-list-services", "agent-get-service-details", "agent-list-user-appointments", "agent-cancel-appointment", "agent-resolve-date-reference"] :
+        for i, name_key in ["agent-list-professionals", "agent-check-availability", "agent-create-appointment", "agent-list-services", "agent-get-service-details", "agent-list-user-appointments", "agent-cancel-appointment"] :
         {
           type   = "metric"
           x      = (i % 3) * 8
